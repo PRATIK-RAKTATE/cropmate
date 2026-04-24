@@ -9,10 +9,10 @@ import { FarmPage } from './pages/FarmPage.jsx'
 import { HistoryPage } from './pages/HistoryPage.jsx'
 import { LanguagePage } from './pages/LanguagePage.jsx'
 import { LoginPage } from './pages/LoginPage.jsx'
-import { RadarPage } from './pages/RadarPage.jsx'
 import { RecommendationDetailPage } from './pages/RecommendationDetailPage.jsx'
 import { RecommendationsPage } from './pages/RecommendationsPage.jsx'
 import { SoilPage } from './pages/SoilPage.jsx'
+import { AlertsPage } from './pages/AlertsPage.jsx'
 
 function ProtectedRoute({ children }) {
   const { session } = useAppContext()
@@ -95,10 +95,10 @@ function App() {
           }
         />
         <Route
-          path="/radar"
+          path="/alerts"
           element={
             <ProtectedRoute>
-              <RadarPage />
+              <AlertsPage />
             </ProtectedRoute>
           }
         />

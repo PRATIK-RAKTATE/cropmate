@@ -1,5 +1,5 @@
 import { Link, NavLink, useLocation } from 'react-router-dom'
-import { CloudSun, History, LayoutDashboard, Leaf, MessageCircle, ShieldAlert, Sprout, UserRound, Waves } from 'lucide-react'
+import { CloudSun, History, LayoutDashboard, Leaf, MessageCircle, ShieldAlert, Sprout, UserRound, Waves, Bell } from 'lucide-react'
 import { useAppContext } from '../context/AppContext.jsx'
 import { translations } from '../data/content.js'
 
@@ -10,7 +10,7 @@ const navigation = [
   { to: '/disease', label: 'diseaseScan', icon: Leaf },
   { to: '/assistant', label: 'assistant', icon: MessageCircle },
   { to: '/history', label: 'history', icon: History },
-  { to: '/radar', label: 'radar', icon: ShieldAlert },
+  { to: '/alerts', label: 'alerts', icon: Bell },
   { to: '/admin', label: 'admin', icon: Waves },
 ]
 

@@ -3,6 +3,7 @@ import { env } from './config/env.js'
 import { app } from './app.js'
 import { seedDemoData } from './services/seedService.js'
 import { logger } from './utils/logger.js'
+import { runAlertEngine } from './services/alertEngine.js'
 
 async function start() {
   logger.info('Starting CropMate API', {
@@ -16,6 +17,11 @@ async function start() {
     logger.info('Seeding demo data on startup')
     await seedDemoData()
   }
+
+  // Start automated alert engine
+  logger.info('Starting automated alert engine')
+  runAlertEngine() // Initial run
+  setInterval(runAlertEngine, 1000 * 60 * 60 * 4) // Run every 4 hours
 
   app.listen(env.port, () => {
     logger.info('CropMate API listening', {

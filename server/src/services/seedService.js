@@ -2,9 +2,9 @@ import { CropRecommendation } from '../models/CropRecommendation.js'
 import { DiseaseReport } from '../models/DiseaseReport.js'
 import { Farm } from '../models/Farm.js'
 import { Farmer } from '../models/Farmer.js'
-import { RadarAlert } from '../models/RadarAlert.js'
+import { Alert } from '../models/Alert.js'
 import { SoilReport } from '../models/SoilReport.js'
-import { demoFarmers, demoFarms, demoSoilReports } from '../seed/demoData.js'
+import { demoFarmers, demoFarms, demoSoilReports, demoNewsData } from '../seed/demoData.js'
 
 export async function seedDemoData() {
   const farmerCount = await Farmer.countDocuments()
@@ -117,20 +117,10 @@ export async function seedDemoData() {
     },
   ])
 
-  await RadarAlert.create({
-    farmId: mainFarm._id,
-    crop: 'Soybean',
-    title: 'Village Risk Radar: humidity-linked disease watch',
-    riskLevel: 'medium',
-    windowDays: 5,
-    reason:
-      'Humidity is elevated and recent nearby scans show disease activity that can spread faster during wet spells.',
-    recommendedActions: [
-      'Inspect field edges first.',
-      'Avoid unnecessary irrigation before rain.',
-      'Keep a daily scouting note for new leaf spots.',
-    ],
-    supportingSignals: ['72 mm rainfall outlook', '2 nearby disease scans'],
-    source: 'seed',
-  })
+  // Seed demo alerts for the main farmer
+  await Alert.insertMany(demoNewsData.map(news => ({
+    ...news,
+    farmerId: mainFarmer._id,
+    priority: 'medium',
+  })))
 }

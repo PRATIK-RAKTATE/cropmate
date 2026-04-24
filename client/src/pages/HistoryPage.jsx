@@ -28,7 +28,7 @@ export function HistoryPage() {
         description="This page is designed for poor-connectivity scenarios where recently saved advisory needs to remain available."
       />
 
-      <div className="grid gap-5 p-5 md:grid-cols-3 md:p-8">
+      <div className="grid gap-5 p-5 md:grid-cols-2 lg:grid-cols-4 md:p-8">
         <Card>
           <h2 className="text-2xl font-semibold text-stone-950">Recommendations</h2>
           <div className="mt-4 space-y-3">
@@ -63,6 +63,20 @@ export function HistoryPage() {
                 <p className="text-sm text-stone-600">{formatDate(entry.updatedAt)}</p>
                 <p className="mt-2 text-sm text-stone-900">
                   {entry.messages?.[entry.messages.length - 1]?.content || 'No messages'}
+                </p>
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        <Card>
+          <h2 className="text-2xl font-semibold text-stone-950">Alerts</h2>
+          <div className="mt-4 space-y-3">
+            {history?.alerts?.map((entry) => (
+              <div key={entry._id} className="rounded-2xl bg-stone-50 p-4">
+                <p className="font-semibold text-stone-950">{entry.title}</p>
+                <p className="mt-1 text-sm text-stone-600">
+                  {entry.category} • {formatDate(entry.createdAt)}
                 </p>
               </div>
             ))}

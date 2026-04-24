@@ -14,8 +14,13 @@ export function PageHeader({ eyebrow, title, description, actions }) {
 }
 
 export function Card({ children, className = '' }) {
+  const hasBg = className.includes('bg-')
   return (
-    <div className={`rounded-[1.75rem] border border-stone-200 bg-white p-5 shadow-[0_12px_40px_rgba(120,113,108,0.12)] ${className}`}>
+    <div
+      className={`rounded-[1.75rem] border border-stone-200 ${
+        !hasBg ? 'bg-white' : ''
+      } p-5 shadow-[0_12px_40px_rgba(120,113,108,0.12)] ${className}`}
+    >
       {children}
     </div>
   )

@@ -26,6 +26,15 @@ export const demoFarmers = [
     district: 'Nashik',
     state: 'Maharashtra',
   },
+  {
+    name: 'Dinesh Kulkarni',
+    mobile: '9999999994',
+    password: 'password123',
+    preferredLanguage: 'en',
+    village: 'Hadapsar',
+    district: 'Pune',
+    state: 'Maharashtra',
+  },
 ]
 
 export const demoFarms = [
@@ -85,6 +94,25 @@ export const demoFarms = [
     currentSeason: 'kharif',
     budget: 'high',
     farmingType: 'mixed',
+  },
+  {
+    farmerMobile: '9999999994',
+    name: 'Pune Biotech Plot',
+    location: {
+      village: 'Hadapsar',
+      district: 'Pune',
+      state: 'Maharashtra',
+      lat: 18.5089,
+      lng: 73.9259,
+    },
+    farmSizeAcres: 5,
+    soilType: 'red_soil',
+    irrigationSource: 'canal',
+    waterAvailability: 'high',
+    previousCrop: 'sugarcane',
+    currentSeason: 'rabi',
+    budget: 'high',
+    farmingType: 'conventional',
   },
 ]
 
@@ -195,3 +223,29 @@ export const fallbackWeatherByDistrict = {
     },
   },
 }
+
+export const demoMarketData = [
+  { crop: 'Onion', price: '2,450', unit: 'qtl', trend: 'up' },
+  { crop: 'Tomato', price: '1,800', unit: 'qtl', trend: 'down' },
+  { crop: 'Cotton', price: '7,200', unit: 'qtl', trend: 'stable' },
+  { crop: 'Soybean', price: '4,600', unit: 'qtl', trend: 'up' },
+  { crop: 'Wheat', price: '2,125', unit: 'qtl', trend: 'stable' },
+]
+
+export const demoNewsData = [
+  {
+    category: 'government',
+    title: 'Solar Pump Subsidy Announced',
+    message: 'Government announces 20% subsidy on solar pump installations for this season.',
+  },
+  {
+    category: 'news',
+    title: 'New MSP for Kharif Crops',
+    message: 'Central government increases Minimum Support Price for major kharif crops by 5-7%.',
+  },
+  {
+    category: 'market',
+    title: 'Record Exports for Onions',
+    message: 'Indian onion exports reach record highs, driving up local procurement prices.',
+  },
+]
