@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Button, Card, Input, Label, PageHeader, Select } from '../components/Ui.jsx'
 import { useAppContext } from '../context/AppContext.jsx'
 import { api } from '../services/api.js'
 import { riskTone } from '../utils/format.js'
+import { Camera, Upload, X, Loader2, Sparkles } from 'lucide-react'
 
 export function DiseasePage() {
   const { session } = useAppContext()
@@ -11,6 +12,56 @@ export function DiseasePage() {
   const [report, setReport] = useState(null)
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
+
+  const [isCameraActive, setIsCameraActive] = useState(false)
+  const videoRef = useRef(null)
+  const streamRef = useRef(null)
+
+  async function startCamera() {
+    setIsCameraActive(true)
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { facingMode: 'environment' } 
+      })
+      streamRef.current = stream
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream
+      }
+    } catch (err) {
+      setMessage('Could not access camera. Please check permissions.')
+      setIsCameraActive(false)
+    }
+  }
+
+  function stopCamera() {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop())
+    }
+    setIsCameraActive(false)
+  }
+
+  async function capturePhoto() {
+    if (!videoRef.current) return
+
+    const canvas = document.createElement('canvas')
+    canvas.width = videoRef.current.videoWidth
+    canvas.height = videoRef.current.videoHeight
+    const ctx = canvas.getContext('2d')
+    ctx.drawImage(videoRef.current, 0, 0)
+    
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg'))
+    const file = new File([blob], 'capture.jpg', { type: 'image/jpeg' })
+    setImage(file)
+    stopCamera()
+  }
+
+  useEffect(() => {
+    return () => {
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop())
+      }
+    }
+  }, [])
 
   async function handleSubmit(event) {
     event.preventDefault()
@@ -42,10 +93,31 @@ export function DiseasePage() {
       />
 
       <div className="grid gap-5 p-5 md:grid-cols-[0.48fr_0.52fr] md:p-8">
-        <Card>
-          <form className="grid gap-4" onSubmit={handleSubmit}>
+        <Card className="flex flex-col">
+          <div className="mb-6 flex gap-2">
+            <button 
+              onClick={() => { stopCamera(); setIsCameraActive(false) }}
+              className={`flex-1 py-2 px-4 rounded-xl text-xs font-bold transition-all ${!isCameraActive ? 'bg-stone-900 text-white shadow-lg' : 'bg-stone-100 text-stone-600'}`}
+            >
+              <div className="flex items-center justify-center gap-2">
+                <Upload className="w-3.5 h-3.5" />
+                Upload File
+              </div>
+            </button>
+            <button 
+              onClick={startCamera}
+              className={`flex-1 py-2 px-4 rounded-xl text-xs font-bold transition-all ${isCameraActive ? 'bg-stone-900 text-white shadow-lg' : 'bg-stone-100 text-stone-600'}`}
+            >
+              <div className="flex items-center justify-center gap-2">
+                <Camera className="w-3.5 h-3.5" />
+                Live Camera
+              </div>
+            </button>
+          </div>
+
+          <form className="grid gap-6 flex-1" onSubmit={handleSubmit}>
             <div>
-              <Label>Crop</Label>
+              <Label>Crop Type</Label>
               <Select value={crop} onChange={(event) => setCrop(event.target.value)}>
                 <option value="tomato">Tomato</option>
                 <option value="potato">Potato</option>
@@ -53,15 +125,76 @@ export function DiseasePage() {
                 <option value="soybean">Soybean</option>
               </Select>
             </div>
-            <div>
-              <Label>Leaf image</Label>
-              <Input type="file" accept="image/*" onChange={(event) => setImage(event.target.files?.[0] || null)} />
+
+            <div className="flex-1">
+              <Label>Leaf Image Source</Label>
+              {isCameraActive ? (
+                <div className="relative aspect-square rounded-2xl bg-black overflow-hidden group">
+                  <video 
+                    ref={videoRef} 
+                    autoPlay 
+                    playsInline 
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-3 w-full px-4">
+                    <Button 
+                      type="button"
+                      onClick={capturePhoto}
+                      variant="secondary"
+                      className="flex-1 py-3 flex items-center justify-center gap-2 shadow-xl"
+                    >
+                      <Camera className="w-4 h-4" />
+                      Capture Photo
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className={`relative aspect-square rounded-2xl border-2 border-dashed transition-all flex flex-col items-center justify-center p-6 ${image ? 'border-lime-500 bg-lime-50/30' : 'border-stone-200 bg-stone-50'}`}>
+                  {image ? (
+                    <div className="text-center">
+                      <div className="w-24 h-24 mx-auto bg-lime-100 rounded-2xl flex items-center justify-center mb-4 text-lime-600">
+                        <Sparkles className="w-10 h-10" />
+                      </div>
+                      <p className="text-sm font-bold text-stone-900">{image.name}</p>
+                      <button 
+                        type="button"
+                        onClick={() => setImage(null)}
+                        className="mt-2 text-xs font-semibold text-red-600 hover:underline"
+                      >
+                        Remove Image
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <Upload className="w-10 h-10 text-stone-400 mb-4" />
+                      <p className="text-sm text-stone-500 text-center">Drag and drop or click to select a leaf image</p>
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        onChange={(event) => setImage(event.target.files?.[0] || null)}
+                        className="absolute inset-0 opacity-0 cursor-pointer"
+                      />
+                    </>
+                  )}
+                </div>
+              )}
             </div>
 
-            <Button variant="secondary" disabled={loading || !image}>
-              {loading ? 'Analyzing leaf...' : 'Detect disease'}
+            <Button 
+              type="submit" 
+              variant="secondary" 
+              className="w-full py-4 text-sm uppercase tracking-widest font-black"
+              disabled={loading || !image}
+            >
+              {loading ? (
+                <div className="flex items-center justify-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Analyzing...
+                </div>
+              ) : 'Start Detection'}
             </Button>
-            {message ? <p className="text-sm font-semibold text-red-600">{message}</p> : null}
+            {message ? <p className="text-sm font-semibold text-red-600 text-center">{message}</p> : null}
           </form>
         </Card>
 

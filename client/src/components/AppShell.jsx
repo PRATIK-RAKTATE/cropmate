@@ -26,24 +26,22 @@ export function AppShell({ children }) {
   }
 
   return (
-    <div className="min-h-screen px-4 py-4 md:px-6 md:py-6">
-      <div className="mx-auto flex min-h-[calc(100vh-2rem)] max-w-7xl flex-col overflow-hidden rounded-[2rem] border border-stone-200/70 bg-white/80 shadow-[0_25px_80px_rgba(107,80,27,0.12)] backdrop-blur md:flex-row">
-        <aside className="border-b border-stone-200/80 bg-stone-950 px-5 py-6 text-stone-100 md:w-80 md:border-b-0 md:border-r">
+    <div className="min-h-screen bg-stone-50">
+      <div className="flex min-h-screen flex-col overflow-hidden md:flex-row">
+        <aside className="sticky top-0 h-auto md:h-screen overflow-y-auto scrollbar-hide border-b border-white/10 bg-emerald-950 px-5 py-6 text-emerald-50 md:w-80 md:border-b-0 md:border-r flex flex-col">
           <div className="mb-6 flex items-start justify-between">
             <div>
-              <Link to="/dashboard" className="inline-flex items-center gap-3">
-                <div className="rounded-2xl bg-lime-300 p-3 text-stone-950">
-                  <CloudSun className="h-5 w-5" />
-                </div>
-                <div>
-                  <p className="font-['Fraunces'] text-2xl leading-none">CropMate</p>
-                  <p className="mt-1 text-sm text-stone-400">Village-first crop advisory</p>
-                </div>
+              <Link to="/dashboard" className="flex items-center">
+                <img 
+                  src="/croplogo.png" 
+                  alt="CropMate" 
+                  className="h-10 w-auto invert brightness-200 drop-shadow-[0_0_10px_rgba(255,255,255,0.1)]" 
+                />
               </Link>
             </div>
           </div>
 
-          <div className="rounded-3xl border border-stone-800 bg-stone-900/90 p-4">
+          <div className="rounded-3xl border border-white/10 bg-emerald-900/40 p-4">
             <p className="text-xs uppercase tracking-[0.28em] text-stone-400">Active farmer</p>
             <p className="mt-2 text-xl font-semibold">{session?.farmer?.name || 'No session'}</p>
             <p className="mt-1 text-sm text-stone-400">
@@ -60,10 +58,9 @@ export function AppShell({ children }) {
                   key={item.to}
                   to={item.to}
                   className={({ isActive }) =>
-                    `flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold transition ${
-                      isActive
-                        ? 'bg-lime-300 text-stone-950'
-                        : 'text-stone-200 hover:bg-stone-900 hover:text-white'
+                    `flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold transition ${isActive
+                      ? 'bg-lime-300 text-emerald-950 shadow-lg shadow-emerald-900/20'
+                      : 'text-emerald-100/70 hover:bg-emerald-900/60 hover:text-white'
                     }`
                   }
                 >
@@ -77,13 +74,13 @@ export function AppShell({ children }) {
           <button
             type="button"
             onClick={logout}
-            className="mt-6 rounded-2xl border border-stone-700 px-4 py-3 text-sm font-semibold text-stone-200 transition hover:bg-stone-900"
+            className="mt-6 rounded-2xl border border-emerald-800 px-4 py-3 text-sm font-semibold text-emerald-100/70 transition hover:bg-emerald-900/60 hover:text-white"
           >
             Switch farmer
           </button>
         </aside>
 
-        <main className="flex-1 bg-[linear-gradient(180deg,rgba(251,248,241,0.75),rgba(255,255,255,0.92))]">
+        <main className="flex-1 h-screen overflow-y-auto bg-[linear-gradient(180deg,rgba(251,248,241,0.75),rgba(255,255,255,0.92))]">
           {children}
         </main>
       </div>
