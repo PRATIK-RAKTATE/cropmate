@@ -1,50 +1,28 @@
 import { ChatSession } from '../models/ChatSession.js'
 
-function buildFallbackAnswer({ question, language, recommendation, weather, diseaseReport }) {
-  const crop = recommendation?.recommendations?.[0]?.crop || 'the suggested crop'
-  const diseaseLine = diseaseReport
-    ? `Latest disease signal: ${diseaseReport.disease} on ${diseaseReport.crop}.`
-    : 'No recent disease scan is attached to this answer.'
-
-  const answers = {
-    en: `Direct answer: ${crop} is currently the strongest fit for this farm.\nWhy this applies: Weather is around ${weather.current.temperature}C with ${weather.current.humidity}% humidity, and the latest recommendation already ranks ${crop} highest. ${diseaseLine}\nNext steps: Review the crop detail screen, follow the listed next actions, and re-check the radar alert before sowing.\nWarning: If your field conditions have changed since the last soil entry, update the soil report before acting.\nQuestion received: ${question}`,
-    hi: `सीधा उत्तर: इस खेत के लिए अभी ${crop} सबसे मजबूत विकल्प है।\nयह सलाह क्यों लागू है: मौसम लगभग ${weather.current.temperature}C है और आर्द्रता ${weather.current.humidity}% है। हाल की सिफारिश में ${crop} सबसे ऊपर है। ${diseaseLine}\nअगले कदम: फसल विवरण स्क्रीन देखें, दिए गए अगले कदम अपनाएं, और बुवाई से पहले रडार अलर्ट फिर जांचें।\nचेतावनी: यदि मिट्टी की स्थिति बदली है तो कार्रवाई से पहले नया सॉइल एंट्री करें।\nप्रश्न: ${question}`,
-    mr: `थेट उत्तर: या शेतासाठी सध्या ${crop} हा सर्वात मजबूत पर्याय आहे.\nही सल्ला तुमच्या शेताला का लागू आहे: तापमान सुमारे ${weather.current.temperature}C आणि आर्द्रता ${weather.current.humidity}% आहे. अलीकडच्या शिफारशीत ${crop} वरच्या क्रमांकावर आहे. ${diseaseLine}\nपुढील पावले: पीक तपशील स्क्रीन उघडा, दिलेली पावले घ्या, आणि पेरणीपूर्वी रडार अलर्ट पुन्हा तपासा.\nइशारा: मातीची स्थिती बदलली असेल तर कृतीपूर्वी नवीन सॉइल एंट्री द्या.\nप्रश्न: ${question}`,
-  }
-
-  return answers[language] || answers.en
-}
-
-function buildPrompt({ farmer, farm, soil, recommendation, weather, diseaseReport, language, question }) {
+function buildSystemPrompt(language) {
   return `
-You are CropMate, a farmer advisory assistant.
+You are CropMate, a friendly and expert multi-turn agricultural assistant. Your goal is to provide personalized crop recommendations to farmers.
 Respond in ${language}.
-Use exactly four labeled sections:
-1. Direct Answer
-2. Why this applies to your farm
-3. Next steps
-4. Warning or when to contact an expert
 
-Farmer:
-${JSON.stringify(farmer, null, 2)}
-
-Farm:
-${JSON.stringify(farm, null, 2)}
-
-Latest soil report:
-${JSON.stringify(soil, null, 2)}
-
-Latest recommendation:
-${JSON.stringify(recommendation, null, 2)}
-
-Weather:
-${JSON.stringify(weather, null, 2)}
-
-Latest disease report:
-${JSON.stringify(diseaseReport, null, 2)}
-
-Farmer question:
-${question}
+CONVERSATION GUIDELINES:
+1. Be empathetic, practical, and use simple "plain words" that a farmer can easily understand.
+2. Do NOT provide a final recommendation immediately unless you have sufficient information.
+3. If information is missing, ask ONE clarifying question at a time to keep the conversation simple.
+4. Information you need to collect (if not already known from the farm context or previous chat):
+   - Soil type (e.g., black soil, red soil, sandy soil, etc.)
+   - Current season (Kharif, Rabi, Zaid)
+   - Water availability and irrigation source
+   - Land size
+   - Previous crop grown
+   - Budget or preferred crop type (cash crop, food crop, etc.)
+5. Use the provided Farm and Farmer context to avoid asking questions already answered.
+6. Once you have enough details, provide a clear recommendation with:
+   - Suggested crops
+   - Why they fit
+   - Next steps
+   - A friendly warning about weather or experts.
+7. Always be concise.
 `.trim()
 }
 
@@ -60,19 +38,34 @@ export async function answerQuestion({
   language,
   question,
 }) {
-  const fallback = buildFallbackAnswer({
-    question,
-    language,
-    recommendation,
-    weather,
-    diseaseReport,
+  // Fetch existing session for history
+  const existingSession = await ChatSession.findOne({ 
+    farmerId: farmer._id, 
+    farmId: farm._id 
   })
 
-  let answer = fallback
+  const history = existingSession?.messages?.slice(-10) || [] // Keep last 10 messages for context
+
+  const contextPrompt = `
+Farmer context: ${JSON.stringify(farmer, null, 2)}
+Farm context: ${JSON.stringify(farm, null, 2)}
+Latest soil report: ${JSON.stringify(soil, null, 2)}
+Weather info: ${JSON.stringify(weather, null, 2)}
+Latest disease report: ${JSON.stringify(diseaseReport, null, 2)}
+`.trim()
+
+  let answer = "I'm sorry, I'm having trouble connecting to my brain. Please try again later."
   let fallbackUsed = true
 
   if (groqApiKey) {
     try {
+      const messages = [
+        { role: 'system', content: buildSystemPrompt(language) },
+        { role: 'system', content: `Current Farm Context: ${contextPrompt}` },
+        ...history.map(m => ({ role: m.role, content: m.content })),
+        { role: 'user', content: question }
+      ]
+
       const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
         headers: {
@@ -81,27 +74,8 @@ export async function answerQuestion({
         },
         body: JSON.stringify({
           model: groqModel,
-          messages: [
-            {
-              role: 'system',
-              content:
-                'You are a careful agricultural assistant. Do not give unsafe chemical dosage. Be concise and practical.',
-            },
-            {
-              role: 'user',
-              content: buildPrompt({
-                farmer,
-                farm,
-                soil,
-                recommendation,
-                weather,
-                diseaseReport,
-                language,
-                question,
-              }),
-            },
-          ],
-          temperature: 0.3,
+          messages,
+          temperature: 0.5,
         }),
       })
 
