@@ -30,6 +30,20 @@ export const api = {
       body: JSON.stringify({ farmerId }),
     })
   },
+  register(payload) {
+    return request('/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+  },
+  login(payload) {
+    return request('/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+  },
   createFarm(payload) {
     return request('/farms', {
       method: 'POST',
