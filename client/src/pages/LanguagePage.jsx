@@ -10,89 +10,122 @@ export function LanguagePage() {
   const copy = translations[language]
 
   return (
-    <div className="min-h-screen px-4 py-5 md:px-8 md:py-8">
-      <div className="mx-auto grid min-h-[calc(100vh-2rem)] max-w-7xl overflow-hidden rounded-[2rem] border border-stone-200 bg-white/85 shadow-[0_24px_80px_rgba(120,113,108,0.18)] backdrop-blur md:grid-cols-[1.2fr_0.8fr]">
-        <section className="relative overflow-hidden bg-stone-950 px-6 py-8 text-white md:px-10 md:py-12">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(163,230,53,0.2),transparent_32%),radial-gradient(circle_at_bottom_right,rgba(250,204,21,0.18),transparent_38%)]" />
-          <div className="relative">
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs uppercase tracking-[0.28em] text-lime-300">
-              <Languages className="h-4 w-4" />
-              {copy.chooseLanguage}
-            </div>
-            <h1 className="mt-8 max-w-xl font-['Fraunces'] text-5xl leading-tight md:text-7xl">
-              {copy.heroTitle}
-            </h1>
-            <p className="mt-6 max-w-xl text-base text-stone-300 md:text-lg">
-              {copy.heroSubtitle}
-            </p>
+    <div className="relative min-h-screen w-full overflow-x-hidden font-medium">
+      {/* Cinematic Background (Absolute Whole Screen Video) */}
+      <div className="fixed inset-0 z-0 h-screen w-screen overflow-hidden pointer-events-none bg-black">
+        <video
+          src="/13780809_3840_2160_24fps.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute top-1/2 left-1/2 min-h-full min-w-full -translate-x-1/2 -translate-y-1/2 object-cover"
+        />
 
-            <div className="mt-10 grid gap-4 md:grid-cols-3">
-              {[
-                {
-                  icon: Sprout,
-                  title: 'Explainable recommendations',
-                  text: 'Soil, weather, water, and crop rotation scored in one view.',
-                },
-                {
-                  icon: ShieldAlert,
-                  title: 'Village Risk Radar',
-                  text: 'A preventive alert layer driven by humidity, rain, and nearby scans.',
-                },
-                {
-                  icon: Waves,
-                  title: 'Multimodal advisory',
-                  text: 'Chat, voice, and disease-image workflows in one dashboard.',
-                },
-              ].map((item) => {
-                const Icon = item.icon
-
-                return (
-                  <div key={item.title} className="rounded-[1.5rem] border border-white/10 bg-white/5 p-4">
-                    <Icon className="h-5 w-5 text-lime-300" />
-                    <h2 className="mt-4 text-lg font-semibold">{item.title}</h2>
-                    <p className="mt-2 text-sm text-stone-300">{item.text}</p>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        </section>
-
-        <section className="px-6 py-8 md:px-10 md:py-12">
-          <p className="text-sm font-semibold uppercase tracking-[0.28em] text-stone-500">
-            CropMate MVP
-          </p>
-          <h2 className="mt-6 font-['Fraunces'] text-4xl text-stone-950">Start in the right language.</h2>
-
-          <div className="mt-10 grid gap-4">
-            {Object.entries(translations).map(([code, value]) => (
-              <button
-                key={code}
-                type="button"
-                onClick={() => setLanguage(code)}
-                className={`rounded-[1.75rem] border p-5 text-left transition ${
-                  language === code
-                    ? 'border-lime-500 bg-lime-50 shadow-[0_12px_30px_rgba(132,204,22,0.15)]'
-                    : 'border-stone-200 bg-stone-50 hover:border-stone-300 hover:bg-white'
-                }`}
-              >
-                <p className="text-xs uppercase tracking-[0.22em] text-stone-500">{code}</p>
-                <p className="mt-2 text-2xl font-semibold text-stone-950">{value.languageName}</p>
-                <p className="mt-2 text-sm text-stone-600">{value.heroSubtitle}</p>
-              </button>
-            ))}
-          </div>
-
-          <Button
-            variant="secondary"
-            className="mt-8 inline-flex items-center gap-2"
-            onClick={() => navigate('/login')}
-          >
-            {copy.continue}
-            <ArrowRight className="h-4 w-4" />
-          </Button>
-        </section>
+        {/* Subtle Vignette Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/20 to-transparent z-20" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/40 z-20" />
       </div>
+
+      {/* Navbar */}
+      <nav className="absolute top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-6 md:px-20 md:py-8">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-lime-500 shadow-[0_0_20px_rgba(132,204,22,0.4)]">
+            <Sprout className="h-6 w-6 text-black" />
+          </div>
+          <span className="text-2xl font-bold tracking-tight text-white">
+            CropMate
+          </span>
+        </div>
+
+        <div className="hidden items-center gap-8 md:flex">
+          <a href="#" className="text-sm font-semibold text-stone-300 transition-colors hover:text-white">Product</a>
+          <a href="#" className="text-sm font-semibold text-stone-300 transition-colors hover:text-white">Features</a>
+          <a href="#" className="text-sm font-semibold text-stone-300 transition-colors hover:text-white">Community</a>
+          <div className="h-4 w-[1px] bg-white/20" />
+          <button className="text-sm font-bold text-lime-400 hover:text-lime-300">Sign In</button>
+        </div>
+      </nav>
+
+      {/* Main Content Layout - Asymmetrical (Right Aligned) */}
+      <main className="relative z-30 flex min-h-screen items-center justify-center px-6 pt-24 pb-12 md:justify-end md:px-20 md:pt-32">
+        <div className="w-full max-w-2xl md:text-left">
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.25em] text-lime-400 backdrop-blur-xl">
+            <Languages className="h-4 w-4" />
+            {copy.chooseLanguage}
+          </div>
+
+          <h1 className="mt-8 text-5xl font-bold leading-[1.1] text-white md:text-7xl">
+            {copy.heroTitle}
+          </h1>
+
+          <p className="mt-6 text-lg leading-relaxed text-stone-200/90 md:text-xl">
+            {copy.heroSubtitle}
+          </p>
+
+          {/* Integrated Language Selection */}
+          <div className="mt-12">
+            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-lime-400/80">
+              Select Language
+            </p>
+            <div className="mt-4 grid gap-3 sm:grid-cols-3">
+              {Object.entries(translations).map(([code, value]) => (
+                <button
+                  key={code}
+                  type="button"
+                  onClick={() => setLanguage(code)}
+                  className={`group relative overflow-hidden rounded-xl border p-4 text-left transition-all duration-300 backdrop-blur-md ${language === code
+                    ? 'border-lime-500 bg-lime-500/20 shadow-[0_15px_30px_rgba(132,204,22,0.2)]'
+                    : 'border-white/10 bg-white/5 hover:border-white/20'
+                    }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className={`text-[9px] font-bold uppercase tracking-[0.15em] ${language === code ? 'text-lime-400' : 'text-stone-500'}`}>
+                        {code}
+                      </p>
+                      <p className="mt-0.5 text-lg font-bold text-white">{value.languageName}</p>
+                    </div>
+                    {language === code && (
+                      <div className="h-2 w-2 rounded-full bg-lime-500 shadow-[0_0_10px_rgba(132,204,22,1)]" />
+                    )}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-10 flex flex-col items-start gap-6 sm:flex-row sm:items-center">
+            <Button
+              variant="secondary"
+              className="h-14 px-10 rounded-xl bg-lime-500 text-lg font-bold text-black hover:bg-lime-400 hover:shadow-[0_0_30px_rgba(132,204,22,0.3)] active:scale-[0.98] transition-all"
+              onClick={() => navigate('/login')}
+            >
+              {copy.continue}
+              <ArrowRight className="ml-2.5 h-5 w-5" />
+            </Button>
+
+            <div className="flex gap-6">
+              {[
+                { icon: Sprout, label: 'Soil' },
+                { icon: ShieldAlert, label: 'Risk' },
+                { icon: Waves, label: 'Live' },
+              ].map((item) => (
+                <div key={item.label} className="flex items-center gap-2 text-stone-400">
+                  <item.icon className="h-3.5 w-3.5 text-lime-500/70" />
+                  <span className="text-[10px] font-bold uppercase tracking-widest">{item.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <p className="mt-12 text-xs font-medium text-stone-500">
+            © 2026 CropMate. Empowering farmers with AI.
+          </p>
+        </div>
+
+        <div className="hidden flex-1 md:block" />
+      </main>
     </div>
   )
 }

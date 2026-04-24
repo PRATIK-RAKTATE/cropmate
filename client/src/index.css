@@ -1,8 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
 :root {
-  font-family: 'Manrope', sans-serif;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
   color: #1f2937;
   background:
     radial-gradient(circle at top left, rgba(250, 204, 21, 0.35), transparent 32%),
@@ -42,4 +43,72 @@ textarea {
 
 #root {
   min-height: 100vh;
+}
+
+@keyframes ken-burns {
+  0% {
+    transform: scale(1) translate(0, 0);
+  }
+  50% {
+    transform: scale(1.1) translate(-1%, -1%);
+  }
+  100% {
+    transform: scale(1) translate(0, 0);
+  }
+}
+
+.animate-ken-burns {
+  animation: ken-burns 30s ease-in-out infinite;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.glass-card-dark {
+  background: rgba(10, 10, 10, 0.6);
+  backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@keyframes wind-sway {
+  0%, 100% {
+    transform: rotate(0deg) skewX(0deg);
+  }
+  25% {
+    transform: rotate(0.5deg) skewX(0.5deg);
+  }
+  75% {
+    transform: rotate(-0.5deg) skewX(-0.5deg);
+  }
+}
+
+@keyframes float-particles {
+  0% {
+    transform: translate(0, 0) opacity(0);
+  }
+  10% {
+    opacity: 0.8;
+  }
+  90% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(100vw, -20vh) opacity(0);
+  }
+}
+
+.animate-wind-sway {
+  animation: wind-sway 10s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+.particle {
+  position: absolute;
+  background: white;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(1px);
 }
