@@ -29,13 +29,12 @@ export function LanguagePage() {
 
       {/* Navbar */}
       <nav className="absolute top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-6 md:px-20 md:py-8">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-lime-500 shadow-[0_0_20px_rgba(132,204,22,0.4)]">
-            <Sprout className="h-6 w-6 text-black" />
-          </div>
-          <span className="text-2xl font-bold tracking-tight text-white">
-            CropMate
-          </span>
+        <div className="flex items-center">
+          <img
+            src="/croplogo.png"
+            alt="CropMate"
+            className="h-12 w-auto md:h-14 invert brightness-200 drop-shadow-[0_0_20px_rgba(255,255,255,0.4)]"
+          />
         </div>
 
         <div className="hidden items-center gap-8 md:flex">
@@ -50,24 +49,21 @@ export function LanguagePage() {
       {/* Main Content Layout - Asymmetrical (Right Aligned) */}
       <main className="relative z-30 flex min-h-screen items-center justify-center px-6 pt-24 pb-12 md:justify-end md:px-20 md:pt-32">
         <div className="w-full max-w-2xl md:text-left">
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.25em] text-lime-400 backdrop-blur-xl">
+          <h1 className="text-5xl font-bold leading-[1.1] text-white md:text-7xl">
+            {copy.heroTitle}
+          </h1>
+
+          <p className="mt-5  text-lg leading-relaxed text-stone-200/90 md:text-xl">
+            {copy.heroSubtitle}
+          </p>
+
+          <div className="mt-20 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.25em] text-lime-400 backdrop-blur-xl">
             <Languages className="h-4 w-4" />
             {copy.chooseLanguage}
           </div>
 
-          <h1 className="mt-8 text-5xl font-bold leading-[1.1] text-white md:text-7xl">
-            {copy.heroTitle}
-          </h1>
-
-          <p className="mt-6 text-lg leading-relaxed text-stone-200/90 md:text-xl">
-            {copy.heroSubtitle}
-          </p>
-
           {/* Integrated Language Selection */}
-          <div className="mt-12">
-            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-lime-400/80">
-              Select Language
-            </p>
+          <div className="mt-6">
             <div className="mt-4 grid gap-3 sm:grid-cols-3">
               {Object.entries(translations).map(([code, value]) => (
                 <button
