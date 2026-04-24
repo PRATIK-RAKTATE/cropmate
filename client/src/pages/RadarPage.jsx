@@ -34,15 +34,15 @@ export function RadarPage() {
               <p className="text-xs uppercase tracking-[0.22em] text-lime-300">Current alert</p>
               <h2 className="mt-3 text-3xl font-semibold">{latestRadar?.title}</h2>
             </div>
-            <div className={`rounded-full px-3 py-2 text-xs font-semibold ${riskTone(latestRadar?.riskLevel || 'low')}`}>
+            <div className={` rounded-full px-3 py-2 text-xs font-semibold ${riskTone(latestRadar?.riskLevel || 'low')}`}>
               {latestRadar?.riskLevel || 'low'}
             </div>
           </div>
-          <p className="mt-6 text-sm text-stone-300">{latestRadar?.reason}</p>
+          <p className="mt-6 text-sm text-black">{latestRadar?.reason}</p>
 
           <div className="mt-6 grid gap-3">
             {latestRadar?.recommendedActions?.map((item) => (
-              <div key={item} className="rounded-2xl bg-white/8 p-4 text-sm text-stone-200">
+              <div key={item} className="rounded-2xl bg-white/8 p-4 text-sm text-black">
                 {item}
               </div>
             ))}
