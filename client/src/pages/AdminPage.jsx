@@ -2,12 +2,13 @@ import { useEffect, useState } from 'react'
 import { Card, Metric, PageHeader, Button, Input, Select, Label } from '../components/Ui.jsx'
 import { api } from '../services/api.js'
 import { Send, MessageSquare, ShieldAlert, Bell } from 'lucide-react'
+import { districts, locations } from '../data/locations.js'
 
 export function AdminPage() {
   const [summary, setSummary] = useState(null)
   const [message, setMessage] = useState('')
   const [alertForm, setAlertForm] = useState({
-    region: { village: '', district: '', state: '' },
+    region: { village: '', district: districts[0], state: 'Maharashtra' },
     category: 'weather',
     priority: 'medium',
     title: '',
@@ -41,6 +42,23 @@ export function AdminPage() {
     }
   }
 
+  const handleRegionChange = (field, value) => {
+    if (field === 'district') {
+      const villages = locations.Maharashtra[value] || []
+      setAlertForm({
+        ...alertForm,
+        region: { ...alertForm.region, district: value, village: '' } // Reset village when district changes
+      })
+    } else {
+      setAlertForm({
+        ...alertForm,
+        region: { ...alertForm.region, [field]: value }
+      })
+    }
+  }
+
+  const availableVillages = locations.Maharashtra[alertForm.region.district] || []
+
   return (
     <div>
       <PageHeader
@@ -71,28 +89,36 @@ export function AdminPage() {
             <form onSubmit={handleSendAlert} className="space-y-4">
               <div className="grid gap-4 sm:grid-cols-3">
                 <div>
-                  <Label>Village (Optional)</Label>
-                  <Input 
-                    placeholder="e.g. Malegaon" 
-                    value={alertForm.region.village}
-                    onChange={e => setAlertForm({...alertForm, region: {...alertForm.region, village: e.target.value}})}
-                  />
+                  <Label>State</Label>
+                  <Select 
+                    value={alertForm.region.state}
+                    onChange={e => handleRegionChange('state', e.target.value)}
+                  >
+                    <option value="Maharashtra">Maharashtra</option>
+                  </Select>
                 </div>
                 <div>
                   <Label>District</Label>
-                  <Input 
-                    placeholder="e.g. Nashik" 
+                  <Select 
                     value={alertForm.region.district}
-                    onChange={e => setAlertForm({...alertForm, region: {...alertForm.region, district: e.target.value}})}
-                  />
+                    onChange={e => handleRegionChange('district', e.target.value)}
+                  >
+                    {districts.map(d => (
+                      <option key={d} value={d}>{d}</option>
+                    ))}
+                  </Select>
                 </div>
                 <div>
-                  <Label>State</Label>
-                  <Input 
-                    placeholder="Maharashtra" 
-                    value={alertForm.region.state}
-                    onChange={e => setAlertForm({...alertForm, region: {...alertForm.region, state: e.target.value}})}
-                  />
+                  <Label>Village (Optional)</Label>
+                  <Select 
+                    value={alertForm.region.village}
+                    onChange={e => handleRegionChange('village', e.target.value)}
+                  >
+                    <option value="">All Villages</option>
+                    {availableVillages.map(v => (
+                      <option key={v} value={v}>{v}</option>
+                    ))}
+                  </Select>
                 </div>
               </div>
 
@@ -127,10 +153,31 @@ export function AdminPage() {
               </div>
 
               <div>
-                <Label>Message</Label>
+                <div className="flex justify-between items-center mb-2">
+                  <Label>Message</Label>
+                  <button
+                    type="button"
+                    disabled={!alertForm.message || sending}
+                    onClick={async () => {
+                      setSending(true)
+                      try {
+                        const { enhancedText } = await api.enhanceMessage(alertForm.message)
+                        setAlertForm({ ...alertForm, message: enhancedText })
+                      } catch (err) {
+                        console.error('Enhancement failed', err)
+                      } finally {
+                        setSending(false)
+                      }
+                    }}
+                    className="text-xs font-bold text-emerald-600 hover:text-emerald-700 flex items-center gap-1 bg-emerald-50 px-3 py-1 rounded-full transition disabled:opacity-50"
+                  >
+                    <ShieldAlert className="w-3 h-3" />
+                    AI Enhance
+                  </button>
+                </div>
                 <textarea 
                   required
-                  className="w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 text-stone-900 outline-none transition focus:border-emerald-500 focus:bg-white min-h-[100px]"
+                  className="w-full rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 text-stone-900 outline-none transition focus:border-emerald-500 focus:bg-white min-h-[120px]"
                   placeholder="Detailed instructions for farmers..."
                   value={alertForm.message}
                   onChange={e => setAlertForm({...alertForm, message: e.target.value})}

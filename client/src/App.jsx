@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import { AppShell } from './components/AppShell.jsx'
 import { useAppContext } from './context/AppContext.jsx'
 import { AdminPage } from './pages/AdminPage.jsx'
+import { AdminLoginPage } from './pages/AdminLoginPage.jsx'
 import { AssistantPage } from './pages/AssistantPage.jsx'
 import { DashboardPage } from './pages/DashboardPage.jsx'
 import { DiseasePage } from './pages/DiseasePage.jsx'
@@ -19,6 +20,16 @@ function ProtectedRoute({ children }) {
 
   if (!session) {
     return <Navigate to="/login" replace />
+  }
+
+  return children
+}
+
+function AdminProtectedRoute({ children }) {
+  const { session } = useAppContext()
+
+  if (!session || !session.isAdmin) {
+    return <Navigate to="/admin/login" replace />
   }
 
   return children
@@ -105,11 +116,12 @@ function App() {
         <Route
           path="/admin"
           element={
-            <ProtectedRoute>
+            <AdminProtectedRoute>
               <AdminPage />
-            </ProtectedRoute>
+            </AdminProtectedRoute>
           }
         />
+        <Route path="/admin/login" element={<AdminLoginPage />} />
       </Routes>
     </AppShell>
   )

@@ -15,6 +15,6 @@ export const registerSchema = z.object({
 })
 
 export const loginSchema = z.object({
-  mobile: z.string().length(10),
-  password: z.string().min(6),
+  mobile: z.string().trim().length(10),
+  password: z.string().trim().min(6),
 })

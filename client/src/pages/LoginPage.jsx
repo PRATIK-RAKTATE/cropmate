@@ -89,6 +89,13 @@ export function LoginPage() {
       <div className="relative z-10 w-full max-w-md mx-4 px-4 py-8">
         <div className="rounded-[2.5rem] border border-white/40 bg-white/15 backdrop-blur-[2px] shadow-[0_40px_100px_rgba(0,0,0,0.5)] overflow-hidden">
           <div className="p-8">
+            <div className="flex justify-center mb-8">
+              <img 
+                src="/croplogo.png" 
+                alt="CropMate" 
+                className="h-16 w-auto brightness-0 invert" 
+              />
+            </div>
             <h1 className="text-3xl font-bold text-white mb-2">
               {isLogin ? copy.login : copy.register}
             </h1>

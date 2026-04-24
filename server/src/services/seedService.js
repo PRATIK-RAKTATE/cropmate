@@ -7,9 +7,26 @@ import { SoilReport } from '../models/SoilReport.js'
 import { demoFarmers, demoFarms, demoSoilReports, demoNewsData } from '../seed/demoData.js'
 
 export async function seedDemoData() {
-  const farmerCount = await Farmer.countDocuments()
+  // Always ensure the specific admin user exists
+  const adminMobile = '1111111111'
+  const existingAdmin = await Farmer.findOne({ mobile: adminMobile })
+  
+  if (!existingAdmin) {
+    await Farmer.create({
+      name: 'Admin User',
+      mobile: adminMobile,
+      password: 'cropmate',
+      preferredLanguage: 'en',
+      village: 'Admin HQ',
+      district: 'Nashik',
+      state: 'Maharashtra',
+      isAdmin: true,
+    })
+    console.log('Admin user seeded.')
+  }
 
-  if (farmerCount > 0) {
+  const farmerCount = await Farmer.countDocuments()
+  if (farmerCount > 1) { // 1 because we just added/checked the admin
     return
   }
 

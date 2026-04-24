@@ -19,7 +19,7 @@ export function AppShell({ children }) {
   const copy = translations[language]
   const location = useLocation()
 
-  const isLanding = location.pathname === '/' || location.pathname === '/login'
+  const isLanding = location.pathname === '/' || location.pathname === '/login' || location.pathname === '/admin/login'
 
   if (isLanding) {
     return <>{children}</>
@@ -35,7 +35,7 @@ export function AppShell({ children }) {
                 <img 
                   src="/croplogo.png" 
                   alt="CropMate" 
-                  className="h-10 w-auto invert brightness-200 drop-shadow-[0_0_10px_rgba(255,255,255,0.1)]" 
+                  className="h-14 w-auto brightness-0 invert" 
                 />
               </Link>
             </div>
@@ -51,8 +51,13 @@ export function AppShell({ children }) {
 
           <nav className="mt-6 grid gap-2">
             {navigation.map((item) => {
-              const Icon = item.icon
+              // Hide admin link for non-admins
+              if (item.to === '/admin' && !session?.isAdmin) return null
+              
+              // If admin is logged in, show only admin-related links (optional, but cleaner)
+              if (session?.isAdmin && item.to !== '/admin' && item.to !== '/dashboard') return null
 
+              const Icon = item.icon
               return (
                 <NavLink
                   key={item.to}
@@ -76,7 +81,7 @@ export function AppShell({ children }) {
             onClick={logout}
             className="mt-6 rounded-2xl border border-emerald-800 px-4 py-3 text-sm font-semibold text-emerald-100/70 transition hover:bg-emerald-900/60 hover:text-white"
           >
-            Switch farmer
+            {session?.isAdmin ? 'Admin Logout' : 'Switch farmer'}
           </button>
         </aside>
 

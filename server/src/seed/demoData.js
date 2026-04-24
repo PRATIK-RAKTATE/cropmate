@@ -35,6 +35,16 @@ export const demoFarmers = [
     district: 'Pune',
     state: 'Maharashtra',
   },
+  {
+    name: 'Admin User',
+    mobile: '1111111111',
+    password: 'cropmate',
+    preferredLanguage: 'en',
+    village: 'Admin HQ',
+    district: 'Nashik',
+    state: 'Maharashtra',
+    isAdmin: true,
+  },
 ]
 
 export const demoFarms = [

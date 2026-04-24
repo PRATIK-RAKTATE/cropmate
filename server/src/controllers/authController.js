@@ -72,3 +72,16 @@ export async function login(request, response) {
     defaultFarm,
   })
 }
+
+export async function adminLogin(request, response) {
+  const payload = validate(loginSchema, request.body)
+
+  const farmer = await Farmer.findOne({ mobile: payload.mobile })
+  if (!farmer || !farmer.isAdmin || !(await farmer.comparePassword(payload.password))) {
+    throw createHttpError(401, 'Invalid admin credentials')
+  }
+
+  response.json({
+    admin: farmer,
+  })
+}

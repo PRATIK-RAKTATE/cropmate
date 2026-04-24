@@ -9,6 +9,7 @@ import { riskTone, titleCase } from '../utils/format.js'
 export function DashboardPage() {
   const { session, latestRecommendation } = useAppContext()
   const [weather, setWeather] = useState(null)
+  const [market, setMarket] = useState([])
   const [history, setHistory] = useState(null)
   const [alerts, setAlerts] = useState([])
   const [loading, setLoading] = useState(true)
@@ -25,11 +26,16 @@ export function DashboardPage() {
         lng: session.defaultFarm.location.lng,
         district: session.defaultFarm.location.district,
       }),
+      api.resolveMarket({
+        district: session.defaultFarm.location.district,
+        state: session.defaultFarm.location.state,
+      }),
       api.getHistory(session.farmer._id),
       api.getAlerts(session.farmer._id),
     ])
-      .then(([weatherPayload, historyPayload, alertsPayload]) => {
+      .then(([weatherPayload, marketPayload, historyPayload, alertsPayload]) => {
         setWeather(weatherPayload)
+        setMarket(marketPayload)
         setHistory(historyPayload)
         setAlerts(alertsPayload.filter(a => !a.isRead).slice(0, 2))
       })
@@ -106,18 +112,19 @@ export function DashboardPage() {
           <div>
             <p className="text-xs uppercase tracking-[0.22em] text-lime-300 mb-4">Live Market Values</p>
             <div className="space-y-3">
-              <div className="flex justify-between items-center border-b border-white/10 pb-2">
-                <span className="text-sm font-medium">Onion</span>
-                <span className="text-sm font-bold text-lime-300">₹2,450 / qtl</span>
-              </div>
-              <div className="flex justify-between items-center border-b border-white/10 pb-2">
-                <span className="text-sm font-medium">Tomato</span>
-                <span className="text-sm font-bold text-lime-300">₹1,800 / qtl</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium">Cotton</span>
-                <span className="text-sm font-bold text-lime-300">₹7,200 / qtl</span>
-              </div>
+              {market.length > 0 ? (
+                market.slice(0, 4).map((m, i) => (
+                  <div key={i} className="flex justify-between items-center border-b border-white/10 pb-2">
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium">{m.crop}</span>
+                      <span className="text-[10px] text-stone-500 uppercase">{m.market || 'Regional'}</span>
+                    </div>
+                    <span className="text-sm font-bold text-lime-300">₹{m.price.toLocaleString()} / {m.unit}</span>
+                  </div>
+                ))
+              ) : (
+                <p className="text-sm text-stone-400 italic py-4 text-center">Fetching latest mandi prices...</p>
+              )}
             </div>
           </div>
           <div className="mt-6 pt-4 border-t border-white/10">

@@ -33,16 +33,8 @@ export function LanguagePage() {
           <img
             src="/croplogo.png"
             alt="CropMate"
-            className="h-12 w-auto md:h-14 invert brightness-200 drop-shadow-[0_0_20px_rgba(255,255,255,0.4)]"
+            className="h-12 w-auto md:h-14 brightness-0 invert"
           />
-        </div>
-
-        <div className="hidden items-center gap-8 md:flex">
-          <a href="#" className="text-sm font-semibold text-stone-300 transition-colors hover:text-white">Product</a>
-          <a href="#" className="text-sm font-semibold text-stone-300 transition-colors hover:text-white">Features</a>
-          <a href="#" className="text-sm font-semibold text-stone-300 transition-colors hover:text-white">Community</a>
-          <div className="h-4 w-[1px] bg-white/20" />
-          <button className="text-sm font-bold text-lime-400 hover:text-lime-300">Sign In</button>
         </div>
       </nav>
 

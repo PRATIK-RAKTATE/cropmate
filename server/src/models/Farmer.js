@@ -14,6 +14,7 @@ const farmerSchema = new mongoose.Schema(
     village: { type: String, required: true },
     district: { type: String, required: true },
     state: { type: String, required: true },
+    isAdmin: { type: Boolean, default: false },
   },
   { timestamps: true },
 )

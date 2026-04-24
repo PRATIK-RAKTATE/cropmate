@@ -44,6 +44,13 @@ export const api = {
       body: JSON.stringify(payload),
     })
   },
+  adminLogin(payload) {
+    return request('/auth/admin-login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+  },
   createFarm(payload) {
     return request('/farms', {
       method: 'POST',
@@ -60,6 +67,13 @@ export const api = {
   },
   resolveWeather(payload) {
     return request('/weather/resolve', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+  },
+  resolveMarket(payload) {
+    return request('/market/resolve', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -92,6 +106,13 @@ export const api = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
+    })
+  },
+  enhanceMessage(text) {
+    return request('/admin/enhance-message', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text }),
     })
   },
   async detectDisease(formData) {
