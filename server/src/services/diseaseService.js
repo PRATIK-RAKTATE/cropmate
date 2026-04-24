@@ -57,14 +57,23 @@ export async function detectDisease({
     )
   }
 
-  const uploadPath = path.resolve(file.path)
-  const normalizedPath = uploadPath.replace(/\.[^.]+$/, '.jpg')
-  const optimizedBuffer = await sharp(uploadPath)
+  const filename = `${Date.now()}-${Math.round(Math.random() * 1e9)}.jpg`
+  const uploadsDir = path.resolve(process.cwd(), 'uploads')
+  const finalPath = path.join(uploadsDir, filename)
+
+  // Ensure uploads directory exists
+  try {
+    await fs.access(uploadsDir)
+  } catch {
+    await fs.mkdir(uploadsDir, { recursive: true })
+  }
+
+  const optimizedBuffer = await sharp(file.buffer)
     .resize({ width: 1280, height: 1280, fit: 'inside', withoutEnlargement: true })
     .jpeg({ quality: 82 })
     .toBuffer()
 
-  await fs.writeFile(normalizedPath, optimizedBuffer)
+  await fs.writeFile(finalPath, optimizedBuffer)
 
   const base64Image = optimizedBuffer.toString('base64')
 
@@ -103,7 +112,7 @@ export async function detectDisease({
     farmerId,
     farmId,
     crop: crop.toLowerCase(),
-    imageUrl: `/uploads/${path.basename(normalizedPath)}`,
+    imageUrl: `/uploads/${filename}`,
     provider: 'plant.id',
     fallbackUsed: false,
     ...normalized,
