@@ -5,21 +5,29 @@ import { env } from '../config/env.js'
  */
 export async function getMarketPrices(district = 'Nashik', state = 'Maharashtra') {
   try {
-    // If we had a real API key for data.gov.in:
-    // const resourceId = '9ef273e5-7f29-414d-adc9-adac2f86af7d'; // Agmarknet resource ID
-    // const url = `https://api.data.gov.in/resource/${resourceId}?api-key=${env.dataGovApiKey}&format=json&filters[state]=${state}&filters[district]=${district}`;
-    // const response = await fetch(url);
-    // const data = await response.json();
-    // return data.records;
+    const resourceId = '9ef84268-d588-465a-a308-a864a43d0070';
+    
+    if (env.dataGovApiKey) {
+      const url = `https://api.data.gov.in/resource/${resourceId}?api-key=${env.dataGovApiKey}&format=json&limit=10&filters[state]=${state}&filters[district]=${district}`;
+      const response = await fetch(url);
+      const data = await response.json();
+      
+      if (data.records && data.records.length > 0) {
+        return data.records.map(r => ({
+          crop: r.commodity,
+          price: r.modal_price,
+          unit: 'qtl',
+          market: r.market,
+          arrivalDate: r.arrival_date
+        }));
+      }
+    }
 
-    // For Hackathon Demo: Return curated mock data if API key is missing
-    // In a real scenario, this would be a real fetch.
+    // Fallback Mock Data for demo if API fails or key is missing
     return [
       { crop: 'Onion', price: 2450, unit: 'qtl', market: `${district} Mandi`, arrivalDate: new Date().toLocaleDateString() },
       { crop: 'Tomato', price: 1800, unit: 'qtl', market: `${district} Mandi`, arrivalDate: new Date().toLocaleDateString() },
       { crop: 'Cotton', price: 7200, unit: 'qtl', market: `${district} Mandi`, arrivalDate: new Date().toLocaleDateString() },
-      { crop: 'Soybean', price: 4600, unit: 'qtl', market: `${district} Mandi`, arrivalDate: new Date().toLocaleDateString() },
-      { crop: 'Wheat', price: 2125, unit: 'qtl', market: `${district} Mandi`, arrivalDate: new Date().toLocaleDateString() },
     ]
   } catch (error) {
     console.error('Market price fetch failed:', error)

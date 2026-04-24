@@ -19,6 +19,10 @@ export async function runAlertEngine() {
 
   for (const farm of farms) {
     try {
+      if (!farm.farmerId) {
+        console.warn(`Skipping farm ${farm._id} because it has no associated farmer.`)
+        continue
+      }
       const dist = farm.location.district
       if (!districtData[dist]) {
         const [news, market] = await Promise.all([
