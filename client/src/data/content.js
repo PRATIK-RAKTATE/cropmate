@@ -1,0 +1,96 @@
+export const translations = {
+  en: {
+    languageName: 'English',
+    heroTitle: 'Crop decisions with weather, disease, and village risk in one place.',
+    heroSubtitle:
+      'CropMate helps farmers choose better crops, act earlier on disease, and understand why every suggestion appears.',
+    chooseLanguage: 'Choose language',
+    continue: 'Continue',
+    demoLogin: 'Demo login',
+    dashboard: 'Dashboard',
+    farmProfile: 'Farm profile',
+    soilAndCrop: 'Soil + recommendation',
+    diseaseScan: 'Disease scan',
+    assistant: 'AI assistant',
+    history: 'History',
+    radar: 'Risk radar',
+    admin: 'Admin',
+  },
+  hi: {
+    languageName: 'हिंदी',
+    heroTitle: 'मौसम, बीमारी और गांव के जोखिम के साथ बेहतर फसल निर्णय।',
+    heroSubtitle:
+      'CropMate किसान को सही फसल चुनने, बीमारी पहले पहचानने और हर सलाह का कारण समझने में मदद करता है।',
+    chooseLanguage: 'भाषा चुनें',
+    continue: 'आगे बढ़ें',
+    demoLogin: 'डेमो लॉगिन',
+    dashboard: 'डैशबोर्ड',
+    farmProfile: 'खेत प्रोफ़ाइल',
+    soilAndCrop: 'मिट्टी + सिफारिश',
+    diseaseScan: 'रोग स्कैन',
+    assistant: 'AI सहायक',
+    history: 'इतिहास',
+    radar: 'रिस्क रडार',
+    admin: 'एडमिन',
+  },
+  mr: {
+    languageName: 'मराठी',
+    heroTitle: 'हवामान, रोग आणि गाव पातळीवरील जोखीमसह चांगले पीक निर्णय.',
+    heroSubtitle:
+      'CropMate शेतकऱ्यांना योग्य पीक निवड, रोगाचा लवकर इशारा आणि प्रत्येक सल्ल्याचे स्पष्ट कारण देतो.',
+    chooseLanguage: 'भाषा निवडा',
+    continue: 'पुढे जा',
+    demoLogin: 'डेमो लॉगिन',
+    dashboard: 'डॅशबोर्ड',
+    farmProfile: 'शेत प्रोफाइल',
+    soilAndCrop: 'माती + शिफारस',
+    diseaseScan: 'रोग स्कॅन',
+    assistant: 'AI सहायक',
+    history: 'इतिहास',
+    radar: 'जोखीम रडार',
+    admin: 'अॅडमिन',
+  },
+}
+
+export const soilPresets = [
+  {
+    id: 'black-balanced',
+    label: 'Black soil / balanced kharif',
+    values: {
+      nitrogen: 70,
+      phosphorus: 45,
+      potassium: 40,
+      ph: 6.8,
+      moisture: 34,
+      organicCarbon: 0.7,
+    },
+  },
+  {
+    id: 'loamy-veg',
+    label: 'Loamy soil / vegetable plot',
+    values: {
+      nitrogen: 62,
+      phosphorus: 48,
+      potassium: 58,
+      ph: 6.5,
+      moisture: 27,
+      organicCarbon: 0.8,
+    },
+  },
+  {
+    id: 'alluvial-low-water',
+    label: 'Alluvial / low water',
+    values: {
+      nitrogen: 68,
+      phosphorus: 38,
+      potassium: 42,
+      ph: 7,
+      moisture: 22,
+      organicCarbon: 0.6,
+    },
+  },
+]
+
+export const seasons = ['kharif', 'rabi', 'zaid']
+export const budgets = ['low', 'medium', 'high']
+export const waterLevels = ['low', 'medium', 'high']
