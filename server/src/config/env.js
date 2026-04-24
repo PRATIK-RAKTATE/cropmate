@@ -17,6 +17,8 @@ export const env = {
   groqApiKey: process.env.GROQ_API_KEY || '',
   groqModel: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
   plantIdApiKey: process.env.PLANT_ID_API_KEY || '',
+  newsApiKey: process.env.NEWS_API_KEY || '',
+  dataGovApiKey: process.env.DATA_GOV_API_KEY || '',
   openMeteoBaseUrl:
     process.env.OPEN_METEO_BASE_URL || 'https://api.open-meteo.com/v1/forecast',
   seedOnStart: (process.env.SEED_ON_START || 'false').toLowerCase() === 'true',

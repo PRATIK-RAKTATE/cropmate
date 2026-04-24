@@ -13,7 +13,6 @@ function loadInitialState() {
         language: 'en',
         session: null,
         latestRecommendation: null,
-        latestRadar: null,
       }
     }
 
@@ -23,7 +22,6 @@ function loadInitialState() {
       language: 'en',
       session: null,
       latestRecommendation: null,
-      latestRadar: null,
     }
   }
 }
@@ -39,7 +37,6 @@ export function AppProvider({ children }) {
     language: state.language,
     session: state.session,
     latestRecommendation: state.latestRecommendation,
-    latestRadar: state.latestRadar,
     setLanguage(language) {
       setState((current) => ({ ...current, language }))
     },
@@ -49,15 +46,11 @@ export function AppProvider({ children }) {
     setLatestRecommendation(latestRecommendation) {
       setState((current) => ({ ...current, latestRecommendation }))
     },
-    setLatestRadar(latestRadar) {
-      setState((current) => ({ ...current, latestRadar }))
-    },
     logout() {
       setState({
         language: state.language,
         session: null,
         latestRecommendation: null,
-        latestRadar: null,
       })
     },
   }

@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { AlertTriangle, ArrowRight, CloudRain, MessageCircle, Sprout, ThermometerSun } from 'lucide-react'
+import { AlertTriangle, ArrowRight, CloudRain, MessageCircle, Sprout, ThermometerSun, Bell } from 'lucide-react'
 import { Button, Card, Metric, PageHeader } from '../components/Ui.jsx'
 import { useAppContext } from '../context/AppContext.jsx'
 import { api } from '../services/api.js'
 import { riskTone, titleCase } from '../utils/format.js'
 
 export function DashboardPage() {
-  const { session, latestRecommendation, setLatestRadar, latestRadar } = useAppContext()
+  const { session, latestRecommendation } = useAppContext()
   const [weather, setWeather] = useState(null)
   const [history, setHistory] = useState(null)
+  const [alerts, setAlerts] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -25,16 +26,16 @@ export function DashboardPage() {
         district: session.defaultFarm.location.district,
       }),
       api.getHistory(session.farmer._id),
-      api.getRadar(session.defaultFarm._id),
+      api.getAlerts(session.farmer._id),
     ])
-      .then(([weatherPayload, historyPayload, radarPayload]) => {
+      .then(([weatherPayload, historyPayload, alertsPayload]) => {
         setWeather(weatherPayload)
         setHistory(historyPayload)
-        setLatestRadar(radarPayload)
+        setAlerts(alertsPayload.filter(a => !a.isRead).slice(0, 2))
       })
       .catch((requestError) => setError(requestError.message))
       .finally(() => setLoading(false))
-  }, [session, setLatestRadar])
+  }, [session])
 
   return (
     <div>
@@ -66,8 +67,8 @@ export function DashboardPage() {
                 {session?.defaultFarm?.location?.village}, {session?.defaultFarm?.location?.district}
               </p>
             </div>
-            <div className={`rounded-full px-3 py-2 text-xs font-semibold ${riskTone(latestRadar?.riskLevel || 'low')}`}>
-              {latestRadar?.riskLevel || 'low'} risk
+            <div className="rounded-full px-3 py-2 text-xs font-semibold bg-emerald-100 text-emerald-700">
+              Active Plot
             </div>
           </div>
 
@@ -101,20 +102,61 @@ export function DashboardPage() {
           ) : null}
         </Card>
 
-        <Card className="bg-stone-950 text-white md:col-span-4">
-          <p className="text-xs uppercase tracking-[0.22em] text-lime-300">Village Risk Radar</p>
-          <h2 className="mt-3 text-2xl font-semibold">
-            {latestRadar?.title || 'Risk signal will appear after radar loads'}
-          </h2>
-          <p className="mt-3 text-sm text-stone-300">
-            {latestRadar?.reason ||
-              'Radar combines nearby disease activity and forecasted weather to raise preventive alerts.'}
-          </p>
-          <Link to="/radar" className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-lime-300">
-            Open full radar
-            <ArrowRight className="h-4 w-4" />
-          </Link>
+        <Card className="bg-stone-950 text-white md:col-span-4 flex flex-col justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-[0.22em] text-lime-300 mb-4">Live Market Values</p>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center border-b border-white/10 pb-2">
+                <span className="text-sm font-medium">Onion</span>
+                <span className="text-sm font-bold text-lime-300">₹2,450 / qtl</span>
+              </div>
+              <div className="flex justify-between items-center border-b border-white/10 pb-2">
+                <span className="text-sm font-medium">Tomato</span>
+                <span className="text-sm font-bold text-lime-300">₹1,800 / qtl</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium">Cotton</span>
+                <span className="text-sm font-bold text-lime-300">₹7,200 / qtl</span>
+              </div>
+            </div>
+          </div>
+          <div className="mt-6 pt-4 border-t border-white/10">
+            <p className="text-[10px] uppercase tracking-widest text-stone-400 mb-2">Latest News & Advisories</p>
+            {alerts.length > 0 ? (
+              <p className="text-xs font-medium leading-relaxed italic">
+                "{alerts[0].title}: {alerts[0].message.substring(0, 80)}..."
+              </p>
+            ) : (
+              <p className="text-xs font-medium leading-relaxed italic text-stone-500">
+                "No recent local news for your region."
+              </p>
+            )}
+          </div>
         </Card>
+
+        {alerts.length > 0 && (
+          <Card className="md:col-span-12 border-l-4 border-l-amber-500 bg-amber-50/30">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Bell className="w-5 h-5 text-amber-600" />
+                <h3 className="font-bold text-stone-900">Recent Unread Alerts</h3>
+              </div>
+              <Link to="/alerts" className="text-xs font-bold text-amber-700 hover:underline">View all</Link>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2">
+              {alerts.map(alert => (
+                <div key={alert._id} className="bg-white p-4 rounded-2xl border border-stone-200 shadow-sm">
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="px-2 py-0.5 bg-stone-100 text-stone-600 text-[9px] font-black uppercase rounded tracking-wider">{alert.category}</span>
+                    <span className="text-[10px] text-stone-400 font-bold">{new Date(alert.createdAt).toLocaleDateString()}</span>
+                  </div>
+                  <p className="font-bold text-stone-900 text-sm truncate">{alert.title}</p>
+                  <p className="text-xs text-stone-500 mt-1 line-clamp-1">{alert.message}</p>
+                </div>
+              ))}
+            </div>
+          </Card>
+        )}
 
         <Card className="md:col-span-4">
           <div className="flex items-center gap-3">
@@ -178,26 +220,36 @@ export function DashboardPage() {
         </Card>
 
         <Card className="md:col-span-12">
-          <div className="grid gap-4 md:grid-cols-3">
-            <div className="rounded-[1.5rem] bg-stone-50 p-4">
-              <CloudRain className="h-5 w-5 text-lime-700" />
-              <p className="mt-4 text-sm font-semibold text-stone-950">Preventive decisions</p>
-              <p className="mt-2 text-sm text-stone-600">
-                Radar surfaces what to do before disease visibly spreads.
+          <div className="grid gap-6 md:grid-cols-3">
+            <div className="rounded-[1.5rem] bg-stone-50 p-6 border border-stone-100">
+              <div className="flex items-center gap-3 mb-4">
+                <CloudRain className="h-5 w-5 text-lime-700" />
+                <h4 className="font-bold text-stone-900">Weather Insight</h4>
+              </div>
+              <p className="text-sm text-stone-600 leading-relaxed">
+                Expect {weather?.forecast.rainfallTotal || 0}mm of cumulative rainfall this week. 
+                {weather?.forecast.rainfallTotal > 50 ? ' High moisture levels detected; prioritize drainage.' : ' Ideal conditions for spraying and fertilizer application.'}
               </p>
             </div>
-            <div className="rounded-[1.5rem] bg-stone-50 p-4">
-              <ThermometerSun className="h-5 w-5 text-amber-700" />
-              <p className="mt-4 text-sm font-semibold text-stone-950">Weather fallback</p>
-              <p className="mt-2 text-sm text-stone-600">
-                Open-Meteo is used live, with district seed data as a demo-safe backup.
+            
+            <div className="rounded-[1.5rem] bg-stone-50 p-6 border border-stone-100">
+              <div className="flex items-center gap-3 mb-4">
+                <ThermometerSun className="h-5 w-5 text-amber-700" />
+                <h4 className="font-bold text-stone-900">Temperature Watch</h4>
+              </div>
+              <p className="text-sm text-stone-600 leading-relaxed">
+                Daytime highs reaching {weather?.forecast.temperatureMax || '--'}°C. 
+                {weather?.forecast.temperatureMax > 35 ? ' Moderate heat stress risk; irrigate in early mornings.' : ' Stable temperatures supporting healthy vegetative growth.'}
               </p>
             </div>
-            <div className="rounded-[1.5rem] bg-stone-50 p-4">
-              <AlertTriangle className="h-5 w-5 text-red-600" />
-              <p className="mt-4 text-sm font-semibold text-stone-950">External AI guardrails</p>
-              <p className="mt-2 text-sm text-stone-600">
-                Disease analysis requires `PLANT_ID_API_KEY`. If missing, the app returns a controlled provider error instead of guessing.
+
+            <div className="rounded-[1.5rem] bg-stone-50 p-6 border border-stone-100">
+              <div className="flex items-center gap-3 mb-4">
+                <MessageCircle className="h-5 w-5 text-sky-700" />
+                <h4 className="font-bold text-stone-900">Market Trend</h4>
+              </div>
+              <p className="text-sm text-stone-600 leading-relaxed">
+                Regional Mandi prices for {session?.defaultFarm?.previousCrop || 'major crops'} are trending upwards due to seasonal demand.
               </p>
             </div>
           </div>

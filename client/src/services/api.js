@@ -78,11 +78,21 @@ export const api = {
   getHistory(farmerId) {
     return request(`/history/${farmerId}`)
   },
-  getRadar(farmId) {
-    return request(`/radar/${farmId}`)
+  getAlerts(farmerId) {
+    return request(`/farmers/${farmerId}/alerts`)
+  },
+  markAlertRead(alertId) {
+    return request(`/alerts/${alertId}/read`, { method: 'POST' })
   },
   getAdminSummary() {
     return request('/admin/summary')
+  },
+  sendRegionalAlert(payload) {
+    return request('/admin/regional-alert', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
   },
   async detectDisease(formData) {
     const response = await fetch(`${API_BASE_URL}/disease/detect`, {

@@ -1,7 +1,7 @@
 import { ChatSession } from '../models/ChatSession.js'
 import { CropRecommendation } from '../models/CropRecommendation.js'
 import { DiseaseReport } from '../models/DiseaseReport.js'
-import { RadarAlert } from '../models/RadarAlert.js'
+import { Alert } from '../models/Alert.js'
 
 export async function getHistory(request, response) {
   const { farmerId } = request.params
@@ -10,7 +10,7 @@ export async function getHistory(request, response) {
     CropRecommendation.find({ farmerId }).sort({ createdAt: -1 }).limit(10),
     DiseaseReport.find({ farmerId }).sort({ createdAt: -1 }).limit(10),
     ChatSession.find({ farmerId }).sort({ updatedAt: -1 }).limit(10),
-    RadarAlert.find().sort({ updatedAt: -1 }).limit(10),
+    Alert.find({ farmerId }).sort({ createdAt: -1 }).limit(10),
   ])
 
   response.json({
