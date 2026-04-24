@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import sharp from 'sharp'
+sharp.cache(false)
 import { DiseaseReport } from '../models/DiseaseReport.js'
 import { Farm } from '../models/Farm.js'
 import { diseaseKnowledge } from '../seed/diseaseKnowledge.js'
@@ -59,12 +60,24 @@ export async function detectDisease({
 
   const uploadPath = path.resolve(file.path)
   const normalizedPath = uploadPath.replace(/\.[^.]+$/, '.jpg')
-  const optimizedBuffer = await sharp(uploadPath)
+
+  
+  const inputBuffer = await fs.readFile(uploadPath)
+  const optimizedBuffer = await sharp(inputBuffer)
     .resize({ width: 1280, height: 1280, fit: 'inside', withoutEnlargement: true })
     .jpeg({ quality: 82 })
     .toBuffer()
 
   await fs.writeFile(normalizedPath, optimizedBuffer)
+
+  if (normalizedPath !== uploadPath) {
+    try {
+      await fs.unlink(uploadPath)
+    } catch (unlinkError) {
+      // Non-critical, just log it
+      console.warn(`Could not remove temporary upload: ${uploadPath}`, unlinkError)
+    }
+  }
 
   const base64Image = optimizedBuffer.toString('base64')
 
