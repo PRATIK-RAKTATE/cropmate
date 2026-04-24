@@ -1,11 +1,65 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import sharp from 'sharp'
-sharp.cache(false)
+import Groq from 'groq-sdk'
 import { DiseaseReport } from '../models/DiseaseReport.js'
 import { Farm } from '../models/Farm.js'
 import { diseaseKnowledge } from '../seed/diseaseKnowledge.js'
 import { createHttpError } from '../utils/httpError.js'
+
+async function enrichDiseaseReportWithGroq({
+  groqApiKey,
+  groqModel,
+  crop,
+  disease,
+  initialData,
+}) {
+  if (!groqApiKey) return initialData
+
+  try {
+    const groq = new Groq({ apiKey: groqApiKey })
+    const prompt = `
+      You are an expert agricultural AI assistant. 
+      A farmer's crop (${crop}) has been identified with the disease/issue: "${disease}".
+      
+      Initial raw data:
+      - Cause: ${initialData.cause}
+      - Actions: ${initialData.immediateAction.join(', ')}
+      
+      Please provide a more detailed and farmer-friendly response in English.
+      Format the response as a JSON object with the following fields:
+      1. "explanation": A simple, empathetic explanation of what the disease is, in "plain words" that a farmer can easily understand.
+      2. "cause": A detailed but clear explanation of why this happened (environmental factors, soil, etc.).
+      3. "immediateAction": A list of 3-5 specific, actionable steps the farmer should take right now.
+      4. "organicTreatment": A list of 2-3 highly detailed, organic treatment methods specific to ${crop}. Mention specific natural ingredients or preparations (like Neem oil, buttermilk spray, etc. where appropriate).
+      5. "chemicalTreatment": A list of 1-2 specific, crop-oriented chemical treatments with guidance on safe application for ${crop}.
+      6. "preventionTips": A list of 2-3 tips to avoid this in the future.
+
+      Return ONLY the JSON object.
+    `
+
+    const chatCompletion = await groq.chat.completions.create({
+      messages: [{ role: 'user', content: prompt }],
+      model: groqModel || 'llama-3.3-70b-versatile',
+      response_format: { type: 'json_object' },
+    })
+
+    const enriched = JSON.parse(chatCompletion.choices[0].message.content)
+    
+    return {
+      ...initialData,
+      explanation: enriched.explanation,
+      cause: enriched.cause || initialData.cause,
+      immediateAction: enriched.immediateAction || initialData.immediateAction,
+      organicTreatment: enriched.organicTreatment || initialData.organicTreatment,
+      chemicalTreatment: enriched.chemicalTreatment || initialData.chemicalTreatment,
+      preventionTips: enriched.preventionTips || initialData.preventionTips,
+    }
+  } catch (error) {
+    console.error('Groq enrichment failed:', error)
+    return initialData
+  }
+}
 
 function normalizePlantIdResult(result, crop) {
   const diseaseName = result.name || 'Unknown issue'
@@ -36,6 +90,8 @@ function normalizePlantIdResult(result, crop) {
 
 export async function detectDisease({
   plantIdApiKey,
+  groqApiKey,
+  groqModel,
   farmerId,
   farmId,
   crop,
@@ -58,26 +114,23 @@ export async function detectDisease({
     )
   }
 
-  const uploadPath = path.resolve(file.path)
-  const normalizedPath = uploadPath.replace(/\.[^.]+$/, '.jpg')
+  const filename = `${Date.now()}-${Math.round(Math.random() * 1e9)}.jpg`
+  const uploadsDir = path.resolve(process.cwd(), 'uploads')
+  const finalPath = path.join(uploadsDir, filename)
 
-  
-  const inputBuffer = await fs.readFile(uploadPath)
-  const optimizedBuffer = await sharp(inputBuffer)
+  // Ensure uploads directory exists
+  try {
+    await fs.access(uploadsDir)
+  } catch {
+    await fs.mkdir(uploadsDir, { recursive: true })
+  }
+
+  const optimizedBuffer = await sharp(file.buffer)
     .resize({ width: 1280, height: 1280, fit: 'inside', withoutEnlargement: true })
     .jpeg({ quality: 82 })
     .toBuffer()
 
-  await fs.writeFile(normalizedPath, optimizedBuffer)
-
-  if (normalizedPath !== uploadPath) {
-    try {
-      await fs.unlink(uploadPath)
-    } catch (unlinkError) {
-      // Non-critical, just log it
-      console.warn(`Could not remove temporary upload: ${uploadPath}`, unlinkError)
-    }
-  }
+  await fs.writeFile(finalPath, optimizedBuffer)
 
   const base64Image = optimizedBuffer.toString('base64')
 
@@ -110,14 +163,23 @@ export async function detectDisease({
     )
   }
 
-  const normalized = normalizePlantIdResult(suggestion, crop.toLowerCase())
+  let normalized = normalizePlantIdResult(suggestion, crop.toLowerCase())
+
+  // Enrich with Groq
+  normalized = await enrichDiseaseReportWithGroq({
+    groqApiKey,
+    groqModel,
+    crop,
+    disease: normalized.disease,
+    initialData: normalized,
+  })
 
   const report = await DiseaseReport.create({
     farmerId,
     farmId,
     crop: crop.toLowerCase(),
-    imageUrl: `/uploads/${path.basename(normalizedPath)}`,
-    provider: 'plant.id',
+    imageUrl: `/uploads/${filename}`,
+    provider: 'plant.id + groq',
     fallbackUsed: false,
     ...normalized,
   })

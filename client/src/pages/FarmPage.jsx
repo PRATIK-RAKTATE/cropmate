@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import { Button, Card, Input, Label, PageHeader, Select } from '../components/Ui.jsx'
 import { useAppContext } from '../context/AppContext.jsx'
-import { budgets, waterLevels } from '../data/content.js'
+import { translations, budgets, waterLevels } from '../data/content.js'
 import { api } from '../services/api.js'
 import { titleCase } from '../utils/format.js'
 
 export function FarmPage() {
-  const { session, setSession } = useAppContext()
+  const { session, setSession, language } = useAppContext()
+  const copy = translations[language]
   const [form, setForm] = useState({
     name: '',
     village: session?.defaultFarm?.location?.village || '',
@@ -94,9 +95,9 @@ export function FarmPage() {
               </p>
             </div>
             <div className="rounded-2xl bg-stone-50 p-4">
-              <p className="text-sm text-stone-500">Soil type</p>
+              <p className="text-sm text-stone-500">{copy.soilType}</p>
               <p className="mt-2 font-semibold text-stone-950">
-                {titleCase(session?.defaultFarm?.soilType)}
+                {copy.soilTypes[session?.defaultFarm?.soilType] || titleCase(session?.defaultFarm?.soilType)}
               </p>
             </div>
             <div className="rounded-2xl bg-stone-50 p-4">
@@ -115,11 +116,11 @@ export function FarmPage() {
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <Label>Village</Label>
+                <Label>{copy.village}</Label>
                 <Input value={form.village} onChange={(event) => updateField('village', event.target.value)} />
               </div>
               <div>
-                <Label>District</Label>
+                <Label>{copy.district}</Label>
                 <Input value={form.district} onChange={(event) => updateField('district', event.target.value)} />
               </div>
             </div>
@@ -135,8 +136,14 @@ export function FarmPage() {
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <Label>Soil type</Label>
-                <Input value={form.soilType} onChange={(event) => updateField('soilType', event.target.value)} />
+                <Label>{copy.soilType}</Label>
+                <Select value={form.soilType} onChange={(event) => updateField('soilType', event.target.value)}>
+                  {Object.entries(copy.soilTypes).map(([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ))}
+                </Select>
               </div>
               <div>
                 <Label>Water availability</Label>

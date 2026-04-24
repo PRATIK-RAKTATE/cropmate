@@ -2,6 +2,7 @@ export const demoFarmers = [
   {
     name: 'Ramesh Patil',
     mobile: '9999999991',
+    password: 'password123',
     preferredLanguage: 'mr',
     village: 'Nashik Road',
     district: 'Nashik',
@@ -10,6 +11,7 @@ export const demoFarmers = [
   {
     name: 'Sita Jadhav',
     mobile: '9999999992',
+    password: 'password123',
     preferredLanguage: 'hi',
     village: 'Niphad',
     district: 'Nashik',
@@ -18,6 +20,7 @@ export const demoFarmers = [
   {
     name: 'Arun Shinde',
     mobile: '9999999993',
+    password: 'password123',
     preferredLanguage: 'en',
     village: 'Sinnar',
     district: 'Nashik',
@@ -128,6 +131,66 @@ export const fallbackWeatherByDistrict = {
       temperatureMax: 31,
       temperatureMin: 22,
       humidityAverage: 74,
+      windowDays: 7,
+    },
+  },
+  'Ahilyanagar (Ahmednagar)': {
+    current: {
+      temperature: 30,
+      humidity: 65,
+      rainfall: 5,
+      windSpeed: 12,
+    },
+    forecast: {
+      rainfallTotal: 45,
+      temperatureMax: 34,
+      temperatureMin: 24,
+      humidityAverage: 68,
+      windowDays: 7,
+    },
+  },
+  'Chhatrapati Sambhajinagar': {
+    current: {
+      temperature: 32,
+      humidity: 60,
+      rainfall: 2,
+      windSpeed: 14,
+    },
+    forecast: {
+      rainfallTotal: 30,
+      temperatureMax: 36,
+      temperatureMin: 26,
+      humidityAverage: 62,
+      windowDays: 7,
+    },
+  },
+  'Pune': {
+    current: {
+      temperature: 26,
+      humidity: 75,
+      rainfall: 12,
+      windSpeed: 10,
+    },
+    forecast: {
+      rainfallTotal: 85,
+      temperatureMax: 29,
+      temperatureMin: 20,
+      humidityAverage: 78,
+      windowDays: 7,
+    },
+  },
+  'Jalgaon': {
+    current: {
+      temperature: 35,
+      humidity: 55,
+      rainfall: 1,
+      windSpeed: 15,
+    },
+    forecast: {
+      rainfallTotal: 20,
+      temperatureMax: 39,
+      temperatureMin: 27,
+      humidityAverage: 58,
       windowDays: 7,
     },
   },

@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { demoLogin } from '../controllers/authController.js'
+import { demoLogin, login, register } from '../controllers/authController.js'
 import { getAdminSummary } from '../controllers/adminController.js'
 import { askAssistant, getChatSession } from '../controllers/assistantController.js'
 import { uploadDiseaseImage, uploadDiseaseScan } from '../controllers/diseaseController.js'
@@ -14,6 +14,8 @@ import { resolveWeather } from '../controllers/weatherController.js'
 export const apiRouter = Router()
 
 apiRouter.post('/auth/demo-login', demoLogin)
+apiRouter.post('/auth/register', register)
+apiRouter.post('/auth/login', login)
 apiRouter.get('/farmers', listFarmers)
 apiRouter.get('/farmers/:id', getFarmer)
 apiRouter.post('/farms', createFarm)

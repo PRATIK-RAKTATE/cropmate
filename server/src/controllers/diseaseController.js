@@ -5,18 +5,7 @@ import { env } from '../config/env.js'
 import { detectDisease } from '../services/diseaseService.js'
 import { createHttpError } from '../utils/httpError.js'
 
-const uploadsDirectory = path.resolve(
-  path.dirname(fileURLToPath(import.meta.url)),
-  '../../uploads',
-)
-
-const storage = multer.diskStorage({
-  destination: uploadsDirectory,
-  filename: (_request, file, callback) => {
-    const extension = path.extname(file.originalname) || '.jpg'
-    callback(null, `${Date.now()}-${Math.round(Math.random() * 1e9)}${extension}`)
-  },
-})
+const storage = multer.memoryStorage()
 
 export const uploadDiseaseImage = multer({ storage })
 
@@ -29,6 +18,8 @@ export async function uploadDiseaseScan(request, response) {
 
   const report = await detectDisease({
     plantIdApiKey: env.plantIdApiKey,
+    groqApiKey: env.groqApiKey,
+    groqModel: env.groqModel,
     farmerId,
     farmId,
     crop,

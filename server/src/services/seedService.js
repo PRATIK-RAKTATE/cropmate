@@ -13,7 +13,7 @@ export async function seedDemoData() {
     return
   }
 
-  const farmers = await Farmer.insertMany(demoFarmers)
+  const farmers = await Farmer.create(demoFarmers)
   const farmersByMobile = Object.fromEntries(
     farmers.map((farmer) => [farmer.mobile, farmer]),
   )
