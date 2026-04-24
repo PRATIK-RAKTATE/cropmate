@@ -80,7 +80,19 @@ export function DiseasePage() {
               <p className="mt-4 text-sm text-stone-600">
                 Confidence {report.confidence}% • Provider {report.provider}
               </p>
-              <p className="mt-4 rounded-2xl bg-stone-50 p-4 text-sm text-stone-700">{report.cause}</p>
+              
+              {report.explanation && (
+                <div className="mt-6 border-l-4 border-emerald-500 bg-emerald-50 p-5 rounded-r-2xl">
+                  <p className="text-emerald-950 font-medium leading-relaxed italic">
+                    "{report.explanation}"
+                  </p>
+                </div>
+              )}
+
+              <p className="mt-6 rounded-2xl bg-stone-50 p-4 text-sm text-stone-700">
+                <span className="font-semibold block mb-1 uppercase text-[10px] tracking-wider text-stone-500">The Cause</span>
+                {report.cause}
+              </p>
 
               <div className="mt-5 grid gap-3">
                 {[

@@ -23,9 +23,17 @@ export const translations = {
     village: 'Village',
     district: 'District',
     state: 'State',
+    soilType: 'Soil Type',
     createAccount: 'Create Account',
     alreadyHaveAccount: 'Already have an account? Login',
     noAccount: "Don't have an account? Register",
+    soilTypes: {
+      black_soil: 'Black Soil',
+      loamy_soil: 'Loamy Soil',
+      alluvial_soil: 'Alluvial Soil',
+      red_soil: 'Red Soil',
+      sandy_soil: 'Sandy Soil',
+    },
   },
   hi: {
     languageName: 'हिंदी',
@@ -51,9 +59,17 @@ export const translations = {
     village: 'गांव',
     district: 'जिला',
     state: 'राज्य',
+    soilType: 'मिट्टी का प्रकार',
     createAccount: 'खाता बनाएं',
     alreadyHaveAccount: 'पहले से खाता है? लॉगिन करें',
     noAccount: 'खाता नहीं है? रजिस्टर करें',
+    soilTypes: {
+      black_soil: 'काली मिट्टी',
+      loamy_soil: 'दोमट मिट्टी',
+      alluvial_soil: 'जलोढ़ मिट्टी',
+      red_soil: 'लाल मिट्टी',
+      sandy_soil: 'रेतीली मिट्टी',
+    },
   },
   mr: {
     languageName: 'मराठी',
@@ -79,9 +95,17 @@ export const translations = {
     village: 'गाव',
     district: 'जिल्हा',
     state: 'राज्य',
+    soilType: 'मातीचा प्रकार',
     createAccount: 'खाते तयार करा',
     alreadyHaveAccount: 'आधीच खाते आहे? लॉगिन करा',
     noAccount: 'खाते नाही? नोंदणी करा',
+    soilTypes: {
+      black_soil: 'काळी माती',
+      loamy_soil: 'लोमी माती',
+      alluvial_soil: 'गाळाची माती',
+      red_soil: 'लाल माती',
+      sandy_soil: 'रेताड माती',
+    },
   },
 }
 

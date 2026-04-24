@@ -22,6 +22,7 @@ const diseaseReportSchema = new mongoose.Schema(
     organicTreatment: [{ type: String, default: [] }],
     chemicalTreatment: [{ type: String, default: [] }],
     preventionTips: [{ type: String, default: [] }],
+    explanation: { type: String, default: '' },
     cause: { type: String, default: '' },
     rawSignals: [{ type: String, default: [] }],
     fallbackUsed: { type: Boolean, default: false },

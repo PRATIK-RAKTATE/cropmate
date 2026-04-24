@@ -18,6 +18,8 @@ export async function uploadDiseaseScan(request, response) {
 
   const report = await detectDisease({
     plantIdApiKey: env.plantIdApiKey,
+    groqApiKey: env.groqApiKey,
+    groqModel: env.groqModel,
     farmerId,
     farmId,
     crop,
