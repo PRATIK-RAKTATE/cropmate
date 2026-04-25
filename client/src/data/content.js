@@ -174,6 +174,10 @@ export const translations = {
     risk: 'Risk',
     live: 'Live',
     footerNote: '© 2026 CropMate. Empowering farmers with AI.',
+    // Soil Scanning
+    scanReport: 'Scan Soil Report',
+    scanning: 'Extracting data...',
+    scanError: 'Could not read report. Please enter manually.',
   },
   hi: {
     languageName: 'हिंदी',
@@ -352,6 +356,10 @@ export const translations = {
     risk: 'जोखिम',
     live: 'लाइव',
     footerNote: '© 2026 क्रॉपमेट। AI के साथ किसानों को सशक्त बनाना।',
+    // Soil Scanning
+    scanReport: 'मिट्टी की रिपोर्ट स्कैन करें',
+    scanning: 'डेटा निकाला जा रहा है...',
+    scanError: 'रिपोर्ट नहीं पढ़ी जा सकी। कृपया मैन्युअल रूप से दर्ज करें।',
   },
   mr: {
     languageName: 'मराठी',
@@ -528,6 +536,10 @@ export const translations = {
     risk: 'जोखिम',
     live: 'थेट',
     footerNote: '© २०२६ क्रॉपमेट। AI सह शेतकऱ्यांना सक्षम करणे।',
+    // Soil Scanning
+    scanReport: 'माती अहवाल स्कॅन करा',
+    scanning: 'डेटा काढला जात आहे...',
+    scanError: 'अहवाल वाचता आला नाही. कृपया मॅन्युअली प्रविष्ट करा.',
   },
 }
 

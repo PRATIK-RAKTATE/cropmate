@@ -65,6 +65,19 @@ export const api = {
       body: JSON.stringify(payload),
     })
   },
+  async extractSoilData(formData) {
+    const response = await fetch(`${API_BASE_URL}/recommendations/extract-soil`, {
+      method: 'POST',
+      body: formData,
+    })
+
+    if (!response.ok) {
+      const payload = await response.json().catch(() => ({}))
+      throw new Error(payload.message || 'Soil extraction failed')
+    }
+
+    return response.json()
+  },
   resolveWeather(payload) {
     return request('/weather/resolve', {
       method: 'POST',

@@ -6,7 +6,7 @@ import { uploadDiseaseImage, uploadDiseaseScan } from '../controllers/diseaseCon
 import { getFarm, createFarm } from '../controllers/farmController.js'
 import { getFarmer, listFarmers, getAlerts, markAlertRead } from '../controllers/farmerController.js'
 import { getHistory } from '../controllers/historyController.js'
-import { createRecommendation } from '../controllers/recommendationController.js'
+import { createRecommendation, extractSoil, uploadSoilReport } from '../controllers/recommendationController.js'
 import { createSoilReport } from '../controllers/soilController.js'
 import { resolveWeather } from '../controllers/weatherController.js'
 import { resolveMarket } from '../controllers/marketController.js'
@@ -27,6 +27,7 @@ apiRouter.post('/soil-reports', createSoilReport)
 apiRouter.post('/weather/resolve', resolveWeather)
 apiRouter.post('/market/resolve', resolveMarket)
 apiRouter.post('/recommendations/crop', createRecommendation)
+apiRouter.post('/recommendations/extract-soil', uploadSoilReport.single('image'), extractSoil)
 apiRouter.post('/disease/detect', uploadDiseaseImage.single('image'), uploadDiseaseScan)
 apiRouter.post('/assistant/ask', askAssistant)
 apiRouter.get('/assistant/session/:farmerId/:farmId', getChatSession)

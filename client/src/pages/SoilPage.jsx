@@ -1,14 +1,16 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button, Card, Input, Label, PageHeader, Select } from '../components/Ui.jsx'
 import { useAppContext } from '../context/AppContext.jsx'
 import { translations, budgets, seasons, soilPresets } from '../data/content.js'
 import { api } from '../services/api.js'
 import { titleCase } from '../utils/format.js'
+import { Camera, Upload, Loader2 } from 'lucide-react'
 
 export function SoilPage() {
   const navigate = useNavigate()
   const { session, setLatestRecommendation, language } = useAppContext()
+  const fileInputRef = useRef(null)
   const copy = translations[language]
   const [form, setForm] = useState({
     season: session?.defaultFarm?.currentSeason || 'kharif',
@@ -22,6 +24,30 @@ export function SoilPage() {
   })
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
+  const [scanning, setScanning] = useState(false)
+
+  async function handleScanReport(event) {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    setScanning(true)
+    setMessage('')
+
+    try {
+      const formData = new FormData()
+      formData.append('image', file)
+
+      const extractedData = await api.extractSoilData(formData)
+      setForm(prev => ({
+        ...prev,
+        ...extractedData
+      }))
+    } catch (error) {
+      setMessage(copy.scanError || error.message)
+    } finally {
+      setScanning(false)
+    }
+  }
 
   function updateField(key, value) {
     setForm((current) => ({ ...current, [key]: value }))
@@ -69,6 +95,39 @@ export function SoilPage() {
 
       <div className="grid gap-5 p-5 md:grid-cols-[0.7fr_0.3fr] md:p-8">
         <Card>
+          <div className="mb-6 flex flex-wrap gap-3">
+            <input
+              type="file"
+              ref={fileInputRef}
+              className="hidden"
+              accept="image/*"
+              onChange={handleScanReport}
+            />
+            <button
+              type="button"
+              disabled={scanning}
+              onClick={() => fileInputRef.current?.click()}
+              className="flex items-center gap-2.5 rounded-2xl border-2 border-dashed border-stone-200 bg-white px-6 py-4 font-bold text-stone-600 transition-all hover:border-emerald-500 hover:text-emerald-600 disabled:opacity-50"
+            >
+              {scanning ? (
+                <>
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  {copy.scanning}
+                </>
+              ) : (
+                <>
+                  <Camera className="h-5 w-5" />
+                  {copy.scanReport}
+                </>
+              )}
+            </button>
+            
+            <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-stone-50 border border-stone-100 text-[10px] font-black uppercase tracking-wider text-stone-400">
+              <Upload className="w-3.5 h-3.5" />
+              {copy.soilPresets || 'Presets'}
+            </div>
+          </div>
+
           <form className="grid gap-4" onSubmit={handleSubmit}>
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
