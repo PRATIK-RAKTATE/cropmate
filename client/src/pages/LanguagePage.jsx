@@ -95,9 +95,9 @@ export function LanguagePage() {
 
             <div className="flex gap-6">
               {[
-                { icon: Sprout, label: 'Soil' },
-                { icon: ShieldAlert, label: 'Risk' },
-                { icon: Waves, label: 'Live' },
+                { icon: Sprout, label: copy.soil },
+                { icon: ShieldAlert, label: copy.risk },
+                { icon: Waves, label: copy.live },
               ].map((item) => (
                 <div key={item.label} className="flex items-center gap-2 text-stone-400">
                   <item.icon className="h-3.5 w-3.5 text-lime-500/70" />
@@ -108,7 +108,7 @@ export function LanguagePage() {
           </div>
 
           <p className="mt-12 text-xs font-medium text-stone-500">
-            © 2026 CropMate. Empowering farmers with AI.
+            {copy.footerNote}
           </p>
         </div>
 

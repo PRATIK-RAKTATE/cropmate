@@ -3,6 +3,7 @@ import { Mic, Volume2, Send, Bot, User as UserIcon } from 'lucide-react'
 import { Button, Card, PageHeader } from '../components/Ui.jsx'
 import { useAppContext } from '../context/AppContext.jsx'
 import { api } from '../services/api.js'
+import { translations } from '../data/content.js'
 
 export function AssistantPage() {
   const { language, session } = useAppContext()
@@ -12,6 +13,7 @@ export function AssistantPage() {
   const [error, setError] = useState('')
   const messagesEndRef = useRef(null)
   const recognitionRef = useRef(null)
+  const copy = translations[language]
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -92,9 +94,9 @@ export function AssistantPage() {
       <div className="px-6 py-4 border-b border-stone-200 bg-white">
         <h1 className="text-xl font-bold text-stone-950 flex items-center gap-2">
           <Bot className="w-6 h-6 text-emerald-600" />
-          CropMate Assistant
+          {copy.assistantTitle}
         </h1>
-        <p className="text-sm text-stone-500">Your personalized farming advisor</p>
+        <p className="text-sm text-stone-500">{copy.assistantSubtitle}</p>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 scrollbar-hide">
@@ -103,9 +105,9 @@ export function AssistantPage() {
             <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center">
               <Bot className="w-8 h-8 text-emerald-600" />
             </div>
-            <h2 className="text-lg font-semibold text-stone-900">Namaste! I am CropMate.</h2>
+            <h2 className="text-lg font-semibold text-stone-900">{copy.namasteAI}</h2>
             <p className="text-stone-600">
-              I'm here to help you choose the best crops for your farm. Ask me anything or say "Recommend a crop".
+              {copy.aiDesc}
             </p>
           </div>
         ) : null}
@@ -153,7 +155,7 @@ export function AssistantPage() {
                 <span className="w-2 h-2 bg-stone-400 rounded-full animate-bounce [animation-delay:0.2s]" />
                 <span className="w-2 h-2 bg-stone-400 rounded-full animate-bounce [animation-delay:0.4s]" />
               </div>
-              <span className="text-xs font-medium uppercase tracking-wider">CropMate is thinking</span>
+              <span className="text-xs font-medium uppercase tracking-wider">{copy.thinking}</span>
             </div>
           </div>
         )}
@@ -184,7 +186,7 @@ export function AssistantPage() {
             className="flex-1 bg-transparent border-none focus:ring-0 px-2 py-3 text-stone-900 placeholder:text-stone-500 text-[0.9375rem]"
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
-            placeholder="Ask CropMate something..."
+            placeholder={copy.askSomething}
           />
           
           <button

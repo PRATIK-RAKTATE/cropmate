@@ -3,9 +3,11 @@ import { Bell, Check, Info, AlertTriangle, CloudRain, ShieldAlert } from 'lucide
 import { Card, PageHeader } from '../components/Ui.jsx'
 import { useAppContext } from '../context/AppContext.jsx'
 import { api } from '../services/api.js'
+import { translations } from '../data/content.js'
 
 export function AlertsPage() {
-  const { session } = useAppContext()
+  const { session, language } = useAppContext()
+  const copy = translations[language]
   const [alerts, setAlerts] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -31,18 +33,18 @@ export function AlertsPage() {
   return (
     <div>
       <PageHeader
-        eyebrow="Regional Alerts & News"
-        title="Stay informed about your area"
-        description="Localized alerts for weather risks, crop advisories, and agricultural updates specific to your village and district."
+        eyebrow={copy.alerts}
+        title={copy.alertsTitle}
+        description={copy.alertsDesc}
       />
 
       <div className="p-5 md:p-8 space-y-4">
         {loading ? (
-          <p className="text-stone-500">Loading alerts...</p>
+          <p className="text-stone-500">{copy.loadingAlerts}</p>
         ) : alerts.length === 0 ? (
           <Card className="text-center py-12">
             <Bell className="w-12 h-12 text-stone-300 mx-auto mb-4" />
-            <p className="text-stone-500 font-medium">No alerts yet. We'll notify you when something important happens.</p>
+            <p className="text-stone-500 font-medium">{copy.noAlertsYet}</p>
           </Card>
         ) : (
           alerts.map((alert) => (
@@ -60,7 +62,7 @@ export function AlertsPage() {
                     <div className="flex items-center gap-3">
                       <h3 className="font-bold text-stone-950">{alert.title}</h3>
                       {alert.priority === 'high' && (
-                        <span className="px-2 py-0.5 bg-red-100 text-red-600 text-[10px] font-black uppercase rounded tracking-wider">High Priority</span>
+                        <span className="px-2 py-0.5 bg-red-100 text-red-600 text-[10px] font-black uppercase rounded tracking-wider">{copy.highPriority}</span>
                       )}
                     </div>
                     <span className="text-xs text-stone-400 font-semibold">
@@ -77,7 +79,7 @@ export function AlertsPage() {
                       </span>
                       {alert.sentSms && (
                         <span className="px-3 py-1 bg-blue-50 rounded-full text-[10px] font-bold uppercase text-blue-500 tracking-wider">
-                          SMS Sent
+                          {copy.smsSent}
                         </span>
                       )}
                     </div>
@@ -88,7 +90,7 @@ export function AlertsPage() {
                         className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 hover:text-emerald-700 transition-colors"
                       >
                         <Check className="w-4 h-4" />
-                        Mark as read
+                        {copy.markAsRead}
                       </button>
                     )}
                   </div>

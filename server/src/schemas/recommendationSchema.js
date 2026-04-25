@@ -4,6 +4,7 @@ export const recommendationSchema = z.object({
   farmId: z.string().min(1),
   season: z.enum(['kharif', 'rabi', 'zaid']),
   budget: z.enum(['low', 'medium', 'high']).default('medium'),
+  language: z.enum(['en', 'hi', 'mr']).default('en'),
   soil: z.object({
     nitrogen: z.number().min(0).max(200),
     phosphorus: z.number().min(0).max(200),

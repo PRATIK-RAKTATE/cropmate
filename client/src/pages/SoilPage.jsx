@@ -2,13 +2,14 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button, Card, Input, Label, PageHeader, Select } from '../components/Ui.jsx'
 import { useAppContext } from '../context/AppContext.jsx'
-import { budgets, seasons, soilPresets } from '../data/content.js'
+import { translations, budgets, seasons, soilPresets } from '../data/content.js'
 import { api } from '../services/api.js'
 import { titleCase } from '../utils/format.js'
 
 export function SoilPage() {
   const navigate = useNavigate()
-  const { session, setLatestRecommendation } = useAppContext()
+  const { session, setLatestRecommendation, language } = useAppContext()
+  const copy = translations[language]
   const [form, setForm] = useState({
     season: session?.defaultFarm?.currentSeason || 'kharif',
     budget: session?.defaultFarm?.budget || 'medium',
@@ -33,9 +34,11 @@ export function SoilPage() {
 
     try {
       const recommendation = await api.createRecommendation({
+        farmerId: session.farmer._id,
         farmId: session.defaultFarm._id,
         season: form.season,
         budget: form.budget,
+        language,
         soil: {
           nitrogen: Number(form.nitrogen),
           phosphorus: Number(form.phosphorus),
@@ -59,9 +62,9 @@ export function SoilPage() {
   return (
     <div>
       <PageHeader
-        eyebrow="Soil and crop"
-        title="Generate top 3 crop recommendations"
-        description="Use manual soil values or load a preset card. CropMate will combine soil, weather, water, profitability, and sustainability into an explainable ranking."
+        eyebrow={copy.soilAndCrop}
+        title={copy.soilPageTitle}
+        description={copy.soilPageDesc}
       />
 
       <div className="grid gap-5 p-5 md:grid-cols-[0.7fr_0.3fr] md:p-8">
@@ -69,7 +72,7 @@ export function SoilPage() {
           <form className="grid gap-4" onSubmit={handleSubmit}>
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <Label>Season</Label>
+                <Label>{copy.season}</Label>
                 <Select value={form.season} onChange={(event) => updateField('season', event.target.value)}>
                   {seasons.map((value) => (
                     <option key={value} value={value}>
@@ -79,7 +82,7 @@ export function SoilPage() {
                 </Select>
               </div>
               <div>
-                <Label>Budget</Label>
+                <Label>{copy.budget}</Label>
                 <Select value={form.budget} onChange={(event) => updateField('budget', event.target.value)}>
                   {budgets.map((value) => (
                     <option key={value} value={value}>
@@ -92,12 +95,12 @@ export function SoilPage() {
 
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {[
-                ['nitrogen', 'Nitrogen'],
-                ['phosphorus', 'Phosphorus'],
-                ['potassium', 'Potassium'],
-                ['ph', 'pH'],
-                ['moisture', 'Moisture'],
-                ['organicCarbon', 'Organic carbon'],
+                ['nitrogen', copy.nitrogen],
+                ['phosphorus', copy.phosphorus],
+                ['potassium', copy.potassium],
+                ['ph', copy.ph],
+                ['moisture', copy.moisture],
+                ['organicCarbon', copy.organicCarbon],
               ].map(([key, label]) => (
                 <div key={key}>
                   <Label>{label}</Label>
@@ -112,7 +115,7 @@ export function SoilPage() {
             </div>
 
             <Button variant="secondary" disabled={loading}>
-              {loading ? 'Scoring crops...' : 'Generate recommendations'}
+              {loading ? copy.scoringCrops : copy.generateRec}
             </Button>
 
             {message ? <p className="text-sm font-semibold text-red-600">{message}</p> : null}
@@ -120,7 +123,7 @@ export function SoilPage() {
         </Card>
 
         <Card>
-          <p className="text-xs uppercase tracking-[0.22em] text-stone-500">Sample soil cards</p>
+          <p className="text-xs uppercase tracking-[0.22em] text-stone-500">{copy.sampleSoilCards}</p>
           <div className="mt-4 grid gap-3">
             {soilPresets.map((preset) => (
               <button

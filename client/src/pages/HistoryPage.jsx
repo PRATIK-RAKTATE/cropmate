@@ -3,9 +3,11 @@ import { Card, PageHeader } from '../components/Ui.jsx'
 import { useAppContext } from '../context/AppContext.jsx'
 import { api } from '../services/api.js'
 import { formatDate } from '../utils/format.js'
+import { translations } from '../data/content.js'
 
 export function HistoryPage() {
-  const { session } = useAppContext()
+  const { session, language } = useAppContext()
+  const copy = translations[language]
   const [history, setHistory] = useState(null)
   const [message, setMessage] = useState('')
 
@@ -23,14 +25,14 @@ export function HistoryPage() {
   return (
     <div>
       <PageHeader
-        eyebrow="History"
-        title="Previous recommendations, scans, and chats"
-        description="This page is designed for poor-connectivity scenarios where recently saved advisory needs to remain available."
+        eyebrow={copy.history}
+        title={copy.historyTitle}
+        description={copy.historyDesc}
       />
 
       <div className="grid gap-5 p-5 md:grid-cols-2 lg:grid-cols-4 md:p-8">
         <Card>
-          <h2 className="text-2xl font-semibold text-stone-950">Recommendations</h2>
+          <h2 className="text-2xl font-semibold text-stone-950">{copy.recommendations}</h2>
           <div className="mt-4 space-y-3">
             {history?.recommendations?.map((entry) => (
               <div key={entry._id} className="rounded-2xl bg-stone-50 p-4">
@@ -42,7 +44,7 @@ export function HistoryPage() {
         </Card>
 
         <Card>
-          <h2 className="text-2xl font-semibold text-stone-950">Disease scans</h2>
+          <h2 className="text-2xl font-semibold text-stone-950">{copy.diseaseScans}</h2>
           <div className="mt-4 space-y-3">
             {history?.diseases?.map((entry) => (
               <div key={entry._id} className="rounded-2xl bg-stone-50 p-4">
@@ -56,7 +58,7 @@ export function HistoryPage() {
         </Card>
 
         <Card>
-          <h2 className="text-2xl font-semibold text-stone-950">Chats</h2>
+          <h2 className="text-2xl font-semibold text-stone-950">{copy.chats}</h2>
           <div className="mt-4 space-y-3">
             {history?.chats?.map((entry) => (
               <div key={entry._id} className="rounded-2xl bg-stone-50 p-4">
@@ -70,7 +72,7 @@ export function HistoryPage() {
         </Card>
 
         <Card>
-          <h2 className="text-2xl font-semibold text-stone-950">Alerts</h2>
+          <h2 className="text-2xl font-semibold text-stone-950">{copy.alerts}</h2>
           <div className="mt-4 space-y-3">
             {history?.alerts?.map((entry) => (
               <div key={entry._id} className="rounded-2xl bg-stone-50 p-4">

@@ -10,7 +10,7 @@ const storage = multer.memoryStorage()
 export const uploadDiseaseImage = multer({ storage })
 
 export async function uploadDiseaseScan(request, response) {
-  const { farmId, crop, farmerId } = request.body
+  const { farmId, crop, farmerId, language } = request.body
 
   if (!farmId || !crop || !farmerId) {
     throw createHttpError(400, 'farmId, farmerId, and crop are required')
@@ -24,6 +24,7 @@ export async function uploadDiseaseScan(request, response) {
     farmId,
     crop,
     file: request.file,
+    language,
   })
 
   response.status(201).json(report)

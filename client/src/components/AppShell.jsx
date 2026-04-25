@@ -42,7 +42,7 @@ export function AppShell({ children }) {
           </div>
 
           <div className="rounded-3xl border border-white/10 bg-emerald-900/40 p-4">
-            <p className="text-xs uppercase tracking-[0.28em] text-stone-400">Active farmer</p>
+            <p className="text-xs uppercase tracking-[0.28em] text-stone-400">{copy.activeFarmer}</p>
             <p className="mt-2 text-xl font-semibold">{session?.farmer?.name || 'No session'}</p>
             <p className="mt-1 text-sm text-stone-400">
               {session?.defaultFarm?.location?.village || 'Select demo profile'}
@@ -81,7 +81,7 @@ export function AppShell({ children }) {
             onClick={logout}
             className="mt-6 rounded-2xl border border-emerald-800 px-4 py-3 text-sm font-semibold text-emerald-100/70 transition hover:bg-emerald-900/60 hover:text-white"
           >
-            {session?.isAdmin ? 'Admin Logout' : 'Switch farmer'}
+            {session?.isAdmin ? copy.adminLogout : copy.switchFarmer}
           </button>
         </aside>
 

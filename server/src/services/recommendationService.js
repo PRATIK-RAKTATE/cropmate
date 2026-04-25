@@ -40,21 +40,47 @@ function computeRiskLevel(totalScore, weatherScoreValue) {
   return 'high'
 }
 
-function buildReason(profile, input, scoreBreakdown, weather) {
+function buildReason(profile, input, scoreBreakdown, weather, language = 'en') {
+  const t = {
+    en: {
+      season: `${profile.crop} fits the ${input.season} season`,
+      soil: `${input.farm.soilType.replace('_', ' ')} and pH ${input.soil.ph} are workable for this crop`,
+      weather: `${weather.forecast.rainfallTotal} mm forecast rainfall supports its water needs`,
+      rotation: (prev) => `it also fits after ${prev}`,
+      summary: (soil, weather, water) => `Soil ${soil}/100, weather ${weather}/100, water ${water}/100.`,
+    },
+    hi: {
+      season: `${profile.crop} ${input.season} सीजन के लिए उपयुक्त है`,
+      soil: `${input.farm.soilType.replace('_', ' ')} और pH ${input.soil.ph} इस फसल के लिए सही हैं`,
+      weather: `${weather.forecast.rainfallTotal} मिमी अनुमानित वर्षा इसकी पानी की जरूरतों को पूरा करती है`,
+      rotation: (prev) => `यह ${prev} के बाद भी उपयुक्त है`,
+      summary: (soil, weather, water) => `मिट्टी ${soil}/100, मौसम ${weather}/100, पानी ${water}/100.`,
+    },
+    mr: {
+      season: `${profile.crop} ${input.season} हंगामासाठी योग्य आहे`,
+      soil: `${input.farm.soilType.replace('_', ' ')} आणि pH ${input.soil.ph} या पिकासाठी काम करण्यायोग्य आहेत`,
+      weather: `${weather.forecast.rainfallTotal} मिमी अंदाज वर्तवलेला पाऊस त्याच्या पाण्याची गरज पूर्ण करतो`,
+      rotation: (prev) => `हे ${prev} नंतर देखील योग्य आहे`,
+      summary: (soil, weather, water) => `माती ${soil}/100, हवामान ${weather}/100, पाणी ${water}/100.`,
+    },
+  }
+
+  const lang = t[language] || t.en
+
   const reasons = [
-    `${profile.crop} fits the ${input.season} season`,
-    `${input.farm.soilType.replace('_', ' ')} and pH ${input.soil.ph} are workable for this crop`,
-    `${weather.forecast.rainfallTotal} mm forecast rainfall supports its water needs`,
+    lang.season,
+    lang.soil,
+    lang.weather,
   ]
 
   if (profile.rotationBonus.includes(input.farm.previousCrop.toLowerCase())) {
-    reasons.push(`it also fits after ${input.farm.previousCrop}`)
+    reasons.push(lang.rotation(input.farm.previousCrop))
   }
 
-  return `${reasons.join(', ')}. Soil ${scoreBreakdown.soil}/100, weather ${scoreBreakdown.weather}/100, water ${scoreBreakdown.water}/100.`
+  return `${reasons.join('. ')}. ${lang.summary(scoreBreakdown.soil, scoreBreakdown.weather, scoreBreakdown.water)}`
 }
 
-export function rankCrops({ farm, soil, weather, season }) {
+export function rankCrops({ farm, soil, weather, season, language = 'en' }) {
   const weatherSummary = {
     temperature: weather.current.temperature,
     humidity: weather.current.humidity,
@@ -103,7 +129,7 @@ export function rankCrops({ farm, soil, weather, season }) {
         riskLevel: computeRiskLevel(finalScore, weatherScoreValue),
         durationDays: profile.durationDays,
         waterNeed: profile.waterNeed,
-        reason: buildReason(profile, { farm, soil, season }, scoreBreakdown, weather),
+        reason: buildReason(profile, { farm, soil, season }, scoreBreakdown, weather, language),
         nextSteps: profile.actions,
         scoreBreakdown,
       }

@@ -72,24 +72,24 @@ export function FarmPage() {
   return (
     <div>
       <PageHeader
-        eyebrow="Farm profile"
-        title="Manage the active farm"
-        description="Create a new plot profile or verify the seeded farm details before generating recommendations."
+        eyebrow={copy.farmProfile}
+        title={copy.farmPageTitle}
+        description={copy.farmPageDesc}
       />
 
       <div className="grid gap-5 p-5 md:grid-cols-2 md:p-8">
         <Card>
-          <p className="text-xs uppercase tracking-[0.22em] text-stone-500">Current active farm</p>
+          <p className="text-xs uppercase tracking-[0.22em] text-stone-500">{copy.currentActiveFarm}</p>
           <h2 className="mt-3 text-3xl font-semibold text-stone-950">{session?.defaultFarm?.name}</h2>
           <div className="mt-6 grid gap-3 sm:grid-cols-2">
             <div className="rounded-2xl bg-stone-50 p-4">
-              <p className="text-sm text-stone-500">Location</p>
+              <p className="text-sm text-stone-500">{copy.location}</p>
               <p className="mt-2 font-semibold text-stone-950">
                 {session?.defaultFarm?.location?.village}, {session?.defaultFarm?.location?.district}
               </p>
             </div>
             <div className="rounded-2xl bg-stone-50 p-4">
-              <p className="text-sm text-stone-500">Water availability</p>
+              <p className="text-sm text-stone-500">{copy.waterAvailability}</p>
               <p className="mt-2 font-semibold text-stone-950">
                 {titleCase(session?.defaultFarm?.waterAvailability)}
               </p>
@@ -101,17 +101,17 @@ export function FarmPage() {
               </p>
             </div>
             <div className="rounded-2xl bg-stone-50 p-4">
-              <p className="text-sm text-stone-500">Previous crop</p>
+              <p className="text-sm text-stone-500">{copy.previousCrop}</p>
               <p className="mt-2 font-semibold text-stone-950">{titleCase(session?.defaultFarm?.previousCrop)}</p>
             </div>
           </div>
         </Card>
 
         <Card>
-          <h2 className="text-2xl font-semibold text-stone-950">Create another farm</h2>
+          <h2 className="text-2xl font-semibold text-stone-950">{copy.createAnotherFarm}</h2>
           <form className="mt-6 grid gap-4" onSubmit={handleSubmit}>
             <div>
-              <Label>Farm name</Label>
+              <Label>{copy.farmName}</Label>
               <Input value={form.name} onChange={(event) => updateField('name', event.target.value)} placeholder="North plot" />
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
@@ -126,11 +126,11 @@ export function FarmPage() {
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <Label>Latitude</Label>
+                <Label>{copy.latitude}</Label>
                 <Input type="number" step="0.0001" value={form.lat} onChange={(event) => updateField('lat', event.target.value)} />
               </div>
               <div>
-                <Label>Longitude</Label>
+                <Label>{copy.longitude}</Label>
                 <Input type="number" step="0.0001" value={form.lng} onChange={(event) => updateField('lng', event.target.value)} />
               </div>
             </div>
@@ -146,7 +146,7 @@ export function FarmPage() {
                 </Select>
               </div>
               <div>
-                <Label>Water availability</Label>
+                <Label>{copy.waterAvailability}</Label>
                 <Select value={form.waterAvailability} onChange={(event) => updateField('waterAvailability', event.target.value)}>
                   {waterLevels.map((value) => (
                     <option key={value} value={value}>
@@ -158,7 +158,7 @@ export function FarmPage() {
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <Label>Budget</Label>
+                <Label>{copy.budget}</Label>
                 <Select value={form.budget} onChange={(event) => updateField('budget', event.target.value)}>
                   {budgets.map((value) => (
                     <option key={value} value={value}>
@@ -168,13 +168,13 @@ export function FarmPage() {
                 </Select>
               </div>
               <div>
-                <Label>Farm size (acres)</Label>
+                <Label>{copy.farmSize}</Label>
                 <Input type="number" step="0.1" value={form.farmSizeAcres} onChange={(event) => updateField('farmSizeAcres', event.target.value)} />
               </div>
             </div>
 
             <Button variant="secondary" disabled={saving}>
-              {saving ? 'Saving...' : 'Save active farm'}
+              {saving ? copy.saving : copy.saveActiveFarm}
             </Button>
             {message ? <p className="text-sm font-semibold text-stone-700">{message}</p> : null}
           </form>

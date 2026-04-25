@@ -3,10 +3,12 @@ import { Button, Card, Input, Label, PageHeader, Select } from '../components/Ui
 import { useAppContext } from '../context/AppContext.jsx'
 import { api } from '../services/api.js'
 import { riskTone } from '../utils/format.js'
+import { translations } from '../data/content.js'
 import { Camera, Upload, X, Loader2, Sparkles } from 'lucide-react'
 
 export function DiseasePage() {
-  const { session } = useAppContext()
+  const { session, language } = useAppContext()
+  const copy = translations[language]
   const [crop, setCrop] = useState('tomato')
   const [image, setImage] = useState(null)
   const [report, setReport] = useState(null)
@@ -28,7 +30,7 @@ export function DiseasePage() {
         videoRef.current.srcObject = stream
       }
     } catch (err) {
-      setMessage('Could not access camera. Please check permissions.')
+      setMessage(copy.cameraError)
       setIsCameraActive(false)
     }
   }
@@ -74,6 +76,7 @@ export function DiseasePage() {
       formData.append('farmId', session.defaultFarm._id)
       formData.append('crop', crop)
       formData.append('image', image)
+      formData.append('language', language)
 
       const result = await api.detectDisease(formData)
       setReport(result)
@@ -87,9 +90,9 @@ export function DiseasePage() {
   return (
     <div>
       <PageHeader
-        eyebrow="Disease scan"
-        title="Upload a crop image"
-        description="Leaf analysis uses a hosted vision API. If the provider is not configured, CropMate returns a controlled setup error instead of guessing."
+        eyebrow={copy.diseaseScan}
+        title={copy.uploadCropImage}
+        description={copy.diseaseScanDesc}
       />
 
       <div className="grid gap-5 p-5 md:grid-cols-[0.48fr_0.52fr] md:p-8">
@@ -101,7 +104,7 @@ export function DiseasePage() {
             >
               <div className="flex items-center justify-center gap-2">
                 <Upload className="w-3.5 h-3.5" />
-                Upload File
+                {copy.uploadFile}
               </div>
             </button>
             <button 
@@ -110,24 +113,24 @@ export function DiseasePage() {
             >
               <div className="flex items-center justify-center gap-2">
                 <Camera className="w-3.5 h-3.5" />
-                Live Camera
+                {copy.liveCamera}
               </div>
             </button>
           </div>
 
           <form className="grid gap-6 flex-1" onSubmit={handleSubmit}>
             <div>
-              <Label>Crop Type</Label>
+              <Label>{copy.cropType}</Label>
               <Select value={crop} onChange={(event) => setCrop(event.target.value)}>
-                <option value="tomato">Tomato</option>
-                <option value="potato">Potato</option>
-                <option value="chili">Chili</option>
-                <option value="soybean">Soybean</option>
+                <option value="tomato">{copy.tomato}</option>
+                <option value="potato">{copy.potato}</option>
+                <option value="chili">{copy.chili}</option>
+                <option value="soybean">{copy.soybean}</option>
               </Select>
             </div>
 
             <div className="flex-1">
-              <Label>Leaf Image Source</Label>
+              <Label>{copy.leafSource}</Label>
               {isCameraActive ? (
                 <div className="relative aspect-square rounded-2xl bg-black overflow-hidden group">
                   <video 
@@ -145,7 +148,7 @@ export function DiseasePage() {
                       className="flex-1 py-3 flex items-center justify-center gap-2 shadow-xl"
                     >
                       <Camera className="w-4 h-4" />
-                      Capture Photo
+                      {copy.capturePhoto}
                     </Button>
                   </div>
                 </div>
@@ -162,13 +165,13 @@ export function DiseasePage() {
                         onClick={() => setImage(null)}
                         className="mt-2 text-xs font-semibold text-red-600 hover:underline"
                       >
-                        Remove Image
+                        {copy.removeImage}
                       </button>
                     </div>
                   ) : (
                     <>
                       <Upload className="w-10 h-10 text-stone-400 mb-4" />
-                      <p className="text-sm text-stone-500 text-center">Drag and drop or click to select a leaf image</p>
+                      <p className="text-sm text-stone-500 text-center">{copy.dragDrop}</p>
                       <input 
                         type="file" 
                         accept="image/*" 
@@ -190,9 +193,9 @@ export function DiseasePage() {
               {loading ? (
                 <div className="flex items-center justify-center gap-2">
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  Analyzing...
+                  {copy.analyzing}
                 </div>
-              ) : 'Start Detection'}
+              ) : copy.startDetection}
             </Button>
             {message ? <p className="text-sm font-semibold text-red-600 text-center">{message}</p> : null}
           </form>
@@ -203,7 +206,7 @@ export function DiseasePage() {
             <>
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-xs uppercase tracking-[0.22em] text-stone-500">Detected issue</p>
+                  <p className="text-xs uppercase tracking-[0.22em] text-stone-500">{copy.detectedIssue}</p>
                   <h2 className="mt-2 text-3xl font-semibold text-stone-950">{report.disease}</h2>
                 </div>
                 <div className={`rounded-full px-3 py-2 text-xs font-semibold ${riskTone(report.severity)}`}>
@@ -211,7 +214,7 @@ export function DiseasePage() {
                 </div>
               </div>
               <p className="mt-4 text-sm text-stone-600">
-                Confidence {report.confidence}% • Provider {report.provider}
+                {copy.confidence} {report.confidence}% • {copy.provider} {report.provider}
               </p>
               
               {report.explanation && (
@@ -223,21 +226,21 @@ export function DiseasePage() {
               )}
 
               <p className="mt-6 rounded-2xl bg-stone-50 p-4 text-sm text-stone-700">
-                <span className="font-semibold block mb-1 uppercase text-[10px] tracking-wider text-stone-500">The Cause</span>
+                <span className="font-semibold block mb-1 uppercase text-[10px] tracking-wider text-stone-500">{copy.cause}</span>
                 {report.cause}
               </p>
 
               <div className="mt-5 grid gap-3">
                 {[
-                  ['Immediate action', report.immediateAction],
-                  ['Organic treatment', report.organicTreatment],
-                  ['Chemical treatment', report.chemicalTreatment],
-                  ['Prevention tips', report.preventionTips],
+                  [copy.immediateAction, report.immediateAction],
+                  [copy.organicTreatment, report.organicTreatment],
+                  [copy.chemicalTreatment, report.chemicalTreatment],
+                  [copy.preventionTips, report.preventionTips],
                 ].map(([label, items]) => (
                   <div key={label} className="rounded-2xl bg-stone-50 p-4">
                     <p className="font-semibold text-stone-950">{label}</p>
                     <ul className="mt-3 list-disc pl-5 text-sm text-stone-700">
-                      {items?.length ? items.map((item) => <li key={item}>{item}</li>) : <li>No extra guidance.</li>}
+                      {items?.length ? items.map((item) => <li key={item}>{item}</li>) : <li>{copy.noExtraGuidance}</li>}
                     </ul>
                   </div>
                 ))}
@@ -245,7 +248,7 @@ export function DiseasePage() {
             </>
           ) : (
             <p className="text-sm text-stone-600">
-              Upload a leaf image to see disease name, confidence, severity, treatments, and prevention.
+              {copy.diseaseScanPrompt}
             </p>
           )}
         </Card>

@@ -13,8 +13,16 @@ async function enrichDiseaseReportWithGroq({
   crop,
   disease,
   initialData,
+  language = 'en',
 }) {
   if (!groqApiKey) return initialData
+
+  const languageMap = {
+    en: 'English',
+    hi: 'Hindi',
+    mr: 'Marathi'
+  }
+  const targetLanguage = languageMap[language] || 'English'
 
   try {
     const groq = new Groq({ apiKey: groqApiKey })
@@ -26,14 +34,14 @@ async function enrichDiseaseReportWithGroq({
       - Cause: ${initialData.cause}
       - Actions: ${initialData.immediateAction.join(', ')}
       
-      Please provide a more detailed and farmer-friendly response in English.
+      Please provide a more detailed and farmer-friendly response strictly in ${targetLanguage}.
       Format the response as a JSON object with the following fields:
-      1. "explanation": A simple, empathetic explanation of what the disease is, in "plain words" that a farmer can easily understand.
-      2. "cause": A detailed but clear explanation of why this happened (environmental factors, soil, etc.).
-      3. "immediateAction": A list of 3-5 specific, actionable steps the farmer should take right now.
-      4. "organicTreatment": A list of 2-3 highly detailed, organic treatment methods specific to ${crop}. Mention specific natural ingredients or preparations (like Neem oil, buttermilk spray, etc. where appropriate).
-      5. "chemicalTreatment": A list of 1-2 specific, crop-oriented chemical treatments with guidance on safe application for ${crop}.
-      6. "preventionTips": A list of 2-3 tips to avoid this in the future.
+      1. "explanation": A simple, empathetic explanation of what the disease is in ${targetLanguage}, in "plain words" that a farmer can easily understand.
+      2. "cause": A detailed but clear explanation of why this happened in ${targetLanguage}.
+      3. "immediateAction": A list of 3-5 specific, actionable steps in ${targetLanguage} the farmer should take right now.
+      4. "organicTreatment": A list of 2-3 highly detailed, organic treatment methods in ${targetLanguage} specific to ${crop}.
+      5. "chemicalTreatment": A list of 1-2 specific, crop-oriented chemical treatments in ${targetLanguage}.
+      6. "preventionTips": A list of 2-3 tips in ${targetLanguage} to avoid this in the future.
 
       Return ONLY the JSON object.
     `
@@ -96,6 +104,7 @@ export async function detectDisease({
   farmId,
   crop,
   file,
+  language = 'en',
 }) {
   if (!file) {
     throw createHttpError(400, 'Image is required')
@@ -172,6 +181,7 @@ export async function detectDisease({
     crop,
     disease: normalized.disease,
     initialData: normalized,
+    language,
   })
 
   const report = await DiseaseReport.create({

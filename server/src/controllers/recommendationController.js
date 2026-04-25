@@ -31,6 +31,7 @@ export async function createRecommendation(request, response) {
     soil: payload.soil,
     weather,
     season: payload.season,
+    language: payload.language,
   })
 
   const saved = await CropRecommendation.create({

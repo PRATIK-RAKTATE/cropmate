@@ -100,7 +100,7 @@ export function LoginPage() {
               {isLogin ? copy.login : copy.register}
             </h1>
             <p className="text-stone-300 mb-8">
-              {isLogin ? 'Enter your credentials to access CropMate' : 'Join CropMate to get smart agriculture insights'}
+              {isLogin ? copy.loginSubtitle : copy.registerSubtitle}
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-5">
@@ -129,7 +129,7 @@ export function LoginPage() {
                   value={formData.mobile}
                   onChange={handleChange}
                   className="w-full px-4 py-3 rounded-xl border border-white/10 focus:outline-none focus:ring-2 focus:ring-lime-500/30 focus:border-lime-500 transition-all bg-white/10 text-white placeholder-black"
-                  placeholder="10 digit mobile number"
+                  placeholder={copy.mobilePlaceholder}
                 />
               </div>
 
@@ -143,7 +143,7 @@ export function LoginPage() {
                   value={formData.password}
                   onChange={handleChange}
                   className="w-full px-4 py-3 rounded-xl border border-white/10 focus:outline-none focus:ring-2 focus:ring-lime-500/30 focus:border-lime-500 transition-all bg-white/10 text-white placeholder-black"
-                  placeholder="At least 6 characters"
+                  placeholder={copy.passwordPlaceholder}
                 />
               </div>
 
@@ -189,7 +189,7 @@ export function LoginPage() {
                 className="w-full py-4 mt-4"
                 disabled={loading}
               >
-                {loading ? (isLogin ? 'Signing in...' : 'Registering...') : (isLogin ? copy.login : copy.createAccount)}
+                {loading ? (isLogin ? copy.signingIn : copy.registering) : (isLogin ? copy.login : copy.createAccount)}
               </Button>
             </form>
 
