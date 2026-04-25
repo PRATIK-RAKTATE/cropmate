@@ -11,6 +11,7 @@ export function AssistantPage() {
   const [messages, setMessages] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [isListening, setIsListening] = useState(false)
   const messagesEndRef = useRef(null)
   const recognitionRef = useRef(null)
   const copy = translations[language]
@@ -62,21 +63,59 @@ export function AssistantPage() {
   }
 
   function handleVoiceInput() {
+    if (isListening) {
+      recognitionRef.current?.stop()
+      setIsListening(false)
+      return
+    }
+
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
     if (!SpeechRecognition) {
       setError('Speech recognition is not supported in this browser.')
       return
     }
 
-    recognitionRef.current = new SpeechRecognition()
-    recognitionRef.current.lang = language === 'mr' ? 'mr-IN' : language === 'hi' ? 'hi-IN' : 'en-IN'
-    recognitionRef.current.onresult = (event) => {
-      const transcript = event.results?.[0]?.[0]?.transcript
-      if (transcript) {
-        setQuestion(transcript)
+    const recognition = new SpeechRecognition()
+    recognitionRef.current = recognition
+    
+    recognition.lang = language === 'mr' ? 'mr-IN' : language === 'hi' ? 'hi-IN' : 'en-IN'
+    recognition.interimResults = true
+    recognition.continuous = false
+
+    recognition.onstart = () => {
+      setIsListening(true)
+      setError('')
+    }
+
+    recognition.onresult = (event) => {
+      const transcript = Array.from(event.results)
+        .map(result => result[0])
+        .map(result => result.transcript)
+        .join('')
+      
+      setQuestion(transcript)
+    }
+
+    recognition.onerror = (event) => {
+      console.error('Speech recognition error', event.error)
+      setIsListening(false)
+      if (event.error === 'not-allowed') {
+        setError('Microphone access denied. Please enable it in settings.')
+      } else {
+        setError('Voice recognition failed. Try again.')
       }
     }
-    recognitionRef.current.start()
+
+    recognition.onend = () => {
+      setIsListening(false)
+    }
+
+    try {
+      recognition.start()
+    } catch (err) {
+      console.error('Start error', err)
+      setIsListening(false)
+    }
   }
 
   function speak(text) {
@@ -84,8 +123,16 @@ export function AssistantPage() {
       setError('Text-to-speech is not supported in this browser.')
       return
     }
+    // Cancel any ongoing speech
+    window.speechSynthesis.cancel()
+    
     const utterance = new SpeechSynthesisUtterance(text)
     utterance.lang = language === 'mr' ? 'mr-IN' : language === 'hi' ? 'hi-IN' : 'en-IN'
+    
+    // Adjust rate and pitch for better clarity
+    utterance.rate = 0.95
+    utterance.pitch = 1
+    
     window.speechSynthesis.speak(utterance)
   }
 
@@ -176,8 +223,12 @@ export function AssistantPage() {
           <button
             type="button"
             onClick={handleVoiceInput}
-            className="p-3 text-stone-500 hover:text-emerald-600 hover:bg-white rounded-full transition-all"
-            title="Voice input"
+            className={`p-3 rounded-full transition-all ${
+              isListening 
+                ? 'bg-red-500 text-white animate-pulse shadow-[0_0_15px_rgba(239,68,68,0.5)]' 
+                : 'text-stone-500 hover:text-emerald-600 hover:bg-white'
+            }`}
+            title={isListening ? "Stop listening" : "Voice input"}
           >
             <Mic className="w-5 h-5" />
           </button>
